@@ -1,1 +1,1 @@
-!(cona)[https://github.com/Raidenkyu/FEUP-RCOM/blob/master/vidal.jpg]
+![cona](https://github.com/Raidenkyu/FEUP-RCOM/blob/master/vidal.jpg)
