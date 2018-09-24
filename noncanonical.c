@@ -80,10 +80,11 @@ int main(int argc, char** argv)
 	strcat(guardar,buf);
       if (buf[res-1]=='\0') STOP=TRUE;
     }
+printf("%s\n",guardar);
     sleep(2);
 	guardar[strlen(guardar)]='\0';
-	write(fd,guardar,255);
-	printf("enviado\n");
+	res= write(fd,guardar,255);
+	printf("enviado %d\n",res);
 	
 
 
@@ -91,6 +92,7 @@ int main(int argc, char** argv)
     O ciclo WHILE deve ser alterado de modo a respeitar o indicado no guião 
   */
 
+    sleep(2);
 
     tcsetattr(fd,TCSANOW,&oldtio);
     close(fd);
