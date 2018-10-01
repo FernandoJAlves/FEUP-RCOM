@@ -58,7 +58,7 @@ int main(int argc, char** argv)
 
   /* 
     VTIME e VMIN devem ser alterados de forma a proteger com um temporizador a 
-    leitura do(s) próximo(s) caracter(es)
+    leitura do(s) prï¿½ximo(s) caracter(es)
   */
 
 
@@ -89,7 +89,7 @@ printf("%s\n",guardar);
 
 
   /* 
-    O ciclo WHILE deve ser alterado de modo a respeitar o indicado no guião 
+    O ciclo WHILE deve ser alterado de modo a respeitar o indicado no guiï¿½o 
   */
 
     sleep(2);
