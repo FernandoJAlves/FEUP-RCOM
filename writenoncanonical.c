@@ -15,13 +15,24 @@
 #define FALSE 0
 #define TRUE 1
 
+#define FLAG 0x7E
+#define A 0x03
+
 volatile int STOP=FALSE;
+
+int stateMachine(unsigned char c){
+
+  return 0;
+
+}
+
 
 int main(int argc, char** argv)
 {
     int fd,c, res;
     struct termios oldtio,newtio;
     char buf[255];
+    char msg[255];
     int i, sum = 0, speed = 0;
     
     if ( (argc < 2) || 
@@ -106,19 +117,23 @@ int main(int argc, char** argv)
 
   sleep(2);
 
+  strcpy(msg,"");
 
   while (STOP==FALSE) {       /* loop for input */
-      res = read(fd,buf,255);   /* returns after 5 chars have been input */
-      buf[res]=0;               /* so we can printf... */
-      printf(":%s:%d\n", buf, res);
-      if (buf[res]=='\0') STOP=TRUE;
+      res = read(fd,buf,1);   /* returns after 5 chars have been input */
+      if(res > 0){
+        buf[res]=0;               /* so we can printf... */
+        printf(":%s:%d\n", buf, res);
+        strcat(msg,buf);
+        if (buf[res-1]=='\0') STOP=TRUE;
+      }
   }
 
     if ( tcsetattr(fd,TCSANOW,&oldtio) == -1) {
       perror("tcsetattr");
       exit(-1);
     }
-
+    printf("%s\n",msg);
 
     close(fd);
     return 0;
