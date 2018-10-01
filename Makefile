@@ -1,4 +1,4 @@
-SRC = writenoncanonical
+SRC = noncanonical
 
 all:
 	gcc $(SRC).c -Wall -o run

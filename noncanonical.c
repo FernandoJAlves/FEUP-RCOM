@@ -58,9 +58,6 @@ int main(int argc, char** argv)
 
   /* 
     VTIME e VMIN devem ser alterados de forma a proteger com um temporizador a 
-<<<<<<< HEAD
-    leitura do(s) pr�ximo(s) caracter(es)
-=======
     leitura do(s) próximo(s) caracter(es)
   */
 
@@ -115,7 +112,6 @@ int main(int argc, char** argv)
   /* 
     VTIME e VMIN devem ser alterados de forma a proteger com um temporizador a 
     leitura do(s) próximo(s) caracter(es)
->>>>>>> 85cb985bb20c75aacc2f0cd99771751d95d56ff8
   */
 
 
