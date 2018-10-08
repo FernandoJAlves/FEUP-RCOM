@@ -8,6 +8,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <unistd.h>
+#include "macros.h"
 
 #define BAUDRATE B38400
 #define MODEMDEVICE "/dev/ttyS1"
@@ -15,26 +17,27 @@
 #define FALSE 0
 #define TRUE 1
 
-volatile int STOP=FALSE;
 
-unsigned char SET[5];
-SET[0] = FLAG;
-SET[1] = A;
-SET[2] = setC;
-SET[3]= SET[1]^SET[2];
-SET[4] = FLAG;
+volatile int CTOP=FALSE;
 
-int main(int argc, char** argv)
+
+int send_data(char * arg)
 {
     int fd,c, res;
     struct termios oldtio,newtio;
     char buf[255];
     char msg[255];
     int i, sum = 0, speed = 0;
+
+    unsigned char UA[5];
+    UA[0] = FLAG;
+    UA[1] = A;
+    UA[2] = uaC;
+    UA[3]= UA[1]^UA[2];
+    UA[4] = FLAG;
     
-    if ( (argc < 2) || 
-  	     ((strcmp("/dev/ttyS0", argv[1])!=0) && 
-  	      (strcmp("/dev/ttyS1", argv[1])!=0) )) {
+    if ( (strcmp("/dev/ttyS0", arg)!=0) && 
+  	      (strcmp("/dev/ttyS1", arg)!=0)) {
       printf("Usage:\tnserial SerialPort\n\tex: nserial /dev/ttyS1\n");
       exit(1);
     }
@@ -50,8 +53,8 @@ int main(int argc, char** argv)
   */
 
 
-    fd = open(argv[1], O_RDWR | O_NOCTTY );
-    if (fd <0) {perror(argv[1]); exit(-1); }
+    fd = open(arg, O_RDWR | O_NOCTTY );
+    if (fd <0) {perror(arg); exit(-1); }
 
     if ( tcgetattr(fd,&oldtio) == -1) { /* save current port settings */
       perror("tcgetattr");
@@ -87,29 +90,8 @@ int main(int argc, char** argv)
 
     printf("New termios structure set\n");
 
-
-/*
-    for (i = 0; i < 255; i++) {
-      buf[i] = 'a';
-    }
-    buf[0] = 'z';
-    buf[254] = '\0';
-    
-    buf[25] = '\n';
-    
-    res = write(fd,buf,255);   
-    printf("%d bytes written\n", res);
- */
-
-  /* 
-    O ciclo FOR e as instru��es seguintes devem ser alterados de modo a respeitar 
-    o indicado no gui�o 
-  */
-
-  write(fd,SET,5);
-  alarm(3);
-
-  responseRequestConnection(fd);  
+  //write(fd,UA,5);
+  //alarm(3);
 
   printf("%d bytes written\n", res);
 
@@ -119,13 +101,13 @@ int main(int argc, char** argv)
   sleep(2);
   strcpy(msg,"");
 
-  while (STOP==FALSE) {       /* loop for input */
+  while (CTOP==FALSE) {       /* loop for input */
       res = read(fd,buf,1);   /* returns after 5 chars have been input */
       if(res > 0){
          buf[res]=0;               /* so we can printf... */
         printf(":%s:%d\n", buf, res);
         strcat(msg,buf);
-        if (buf[res]=='\0') STOP=TRUE;
+        if (buf[res]=='\0') CTOP=TRUE;
       }
     }
 
@@ -144,63 +126,55 @@ int main(int argc, char** argv)
     return 0;
 }
 
-unsigned char UA[5];
-UA[0]=FLAG;
-UA[1]=A;
-UA[2]=uaC;
-UA[3]=A^uaC;
-UA[4]=FLAG;
-
-
-
-void responseRequestConnection(int fd){
-  unsigned char c;
-  int state=0;
-  while(!connectionEstabilished){
-    read(fd,&c,1);
-    switch(state){
-      //recebe flag
-      case 0:
-        if(c==UA[0])
-          state=1;
-          break;
-      //recebe A
-      case 1:
-        if(c==UA[1])
-          state=2;
-        else
-          {
-            if(c==UA[0])
-              state=1;
-            else
-              state = 0;
-          }
+int UastateMachine(unsigned char c, int curr_state, unsigned char UA[]){
+  printf("State: %d\n", curr_state);
+  switch(curr_state){
+    case 0:
+      if(c == UA[0]){
+        curr_state = 1;
+      }
       break;
-      //recebe C
-      case 2:
-        if(c==UA[2])
-          state=3;
-        else{
-          if(c==UA[0])
-            state=1;
-          else
-            state = 0;
-        }
+    case 1:
+      if(c == UA[0]){
+        curr_state = 1;
+      }
+      else if(c == UA[1]){
+        curr_state = 2;
+      }
+      else{
+        curr_state = 0;
+      }
       break;
-      //recebe BCC
-      case 3:
-        if(c==UA[3])
-          state = 4;
-        else
-          state=0;
+    case 2:
+      if(c == UA[0]){
+        curr_state = 1;
+      }
+      else if(c == UA[2]){
+        curr_state = 3;
+      }
+      else{
+        curr_state = 0;
+      }
       break;
-      //recebe FLAG final
-      case 4:
-        if(c==UA[4])
-          connectionEstabilished=1;
-        else
-          state = 0;
+    case 3:
+      if(c == UA[0]){
+        curr_state = 1;
+      }
+      else if(c == UA[3]){
+        curr_state = 4;
+      }
+      else{
+        curr_state = 0;
+      }
       break;
-    }
+    case 4:
+      if(c == UA[0]){
+        CTOP = TRUE;
+      }
+      else{
+        curr_state = 0;
+      }
+      break;
   }
+  return curr_state;
 }

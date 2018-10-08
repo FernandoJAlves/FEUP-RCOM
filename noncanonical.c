@@ -6,24 +6,37 @@
 #include <termios.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <strings.h>
+#include <string.h>
+#include "macros.h"
 
 #define BAUDRATE B38400
 #define _POSIX_SOURCE 1 /* POSIX compliant source */
 #define FALSE 0
 #define TRUE 1
 
+
+
 volatile int STOP=FALSE;
 
-int main(int argc, char** argv)
+int receive_data(char * arg)
 {
+
+
+    unsigned char SET[5];
+    SET[0] = FLAG;
+    SET[1] = A;
+    SET[2] = setC;
+    SET[3]= SET[1]^SET[2];
+    SET[4] = FLAG;
+
     int fd,c, res;
     struct termios oldtio,newtio;
     char buf[255],guardar[255];
 
-    if ( (argc < 2) || 
-  	     ((strcmp("/dev/ttyS0", argv[1])!=0) && 
-  	      (strcmp("/dev/ttyS1", argv[1])!=0) )) {
+    if ( (strcmp("/dev/ttyS0", arg)!=0) && 
+  	      (strcmp("/dev/ttyS1", arg)!=0)) {
       printf("Usage:\tnserial SerialPort\n\tex: nserial /dev/ttyS1\n");
       exit(1);
     }
@@ -35,8 +48,8 @@ int main(int argc, char** argv)
   */
   
     
-    fd = open(argv[1], O_RDWR | O_NOCTTY );
-    if (fd <0) {perror(argv[1]); exit(-1); }
+    fd = open(arg, O_RDWR | O_NOCTTY );
+    if (fd <0) {perror(arg); exit(-1); }
 
     if ( tcgetattr(fd,&oldtio) == -1) { /* save current port settings */
       perror("tcgetattr");
@@ -101,4 +114,59 @@ printf("%s\n",guardar);
     tcsetattr(fd,TCSANOW,&oldtio);
     close(fd);
     return 0;
+}
+
+
+
+int SetstateMachine(unsigned char c, int curr_state, unsigned char SET[]){
+  printf("State: %d\n", curr_state);
+  switch(curr_state){
+    case 0:
+      if(c == SET[0]){
+        curr_state = 1;
+      }
+      break;
+    case 1:
+      if(c == SET[0]){
+        curr_state = 1;
+      }
+      else if(c == SET[1]){
+        curr_state = 2;
+      }
+      else{
+        curr_state = 0;
+      }
+      break;
+    case 2:
+      if(c == SET[0]){
+        curr_state = 1;
+      }
+      else if(c == SET[2]){
+        curr_state = 3;
+      }
+      else{
+        curr_state = 0;
+      }
+      break;
+    case 3:
+      if(c == SET[0]){
+        curr_state = 1;
+      }
+      else if(c == SET[3]){
+        curr_state = 4;
+      }
+      else{
+        curr_state = 0;
+      }
+      break;
+    case 4:
+      if(c == SET[0]){
+        STOP = TRUE;
+      }
+      else{
+        curr_state = 0;
+      }
+      break;
+  }
+  return curr_state;
 }
