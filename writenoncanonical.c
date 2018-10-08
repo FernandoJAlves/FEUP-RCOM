@@ -17,6 +17,13 @@
 
 volatile int STOP=FALSE;
 
+unsigned char SET[5];
+SET[0] = FLAG;
+SET[1] = A;
+SET[2] = setC;
+SET[3]= SET[1]^SET[2];
+SET[4] = FLAG;
+
 int main(int argc, char** argv)
 {
     int fd,c, res;
@@ -98,7 +105,12 @@ int main(int argc, char** argv)
     O ciclo FOR e as instru��es seguintes devem ser alterados de modo a respeitar 
     o indicado no gui�o 
   */
-  res = write(fd,buf,strlen(buf)+1);   
+
+  write(fd,SET,5);
+  alarm(3);
+
+  responseRequestConnection(fd);  
+
   printf("%d bytes written\n", res);
 
 
@@ -119,6 +131,9 @@ int main(int argc, char** argv)
 
     printf("%s",msg);
 
+
+      
+
     if ( tcsetattr(fd,TCSANOW,&oldtio) == -1) {
       perror("tcsetattr");
       exit(-1);
@@ -127,4 +142,65 @@ int main(int argc, char** argv)
 
     close(fd);
     return 0;
+}
+
+unsigned char UA[5];
+UA[0]=FLAG;
+UA[1]=A;
+UA[2]=uaC;
+UA[3]=A^uaC;
+UA[4]=FLAG;
+
+
+
+void responseRequestConnection(int fd){
+  unsigned char c;
+  int state=0;
+  while(!connectionEstabilished){
+    read(fd,&c,1);
+    switch(state){
+      //recebe flag
+      case 0:
+        if(c==UA[0])
+          state=1;
+          break;
+      //recebe A
+      case 1:
+        if(c==UA[1])
+          state=2;
+        else
+          {
+            if(c==UA[0])
+              state=1;
+            else
+              state = 0;
+          }
+      break;
+      //recebe C
+      case 2:
+        if(c==UA[2])
+          state=3;
+        else{
+          if(c==UA[0])
+            state=1;
+          else
+            state = 0;
+        }
+      break;
+      //recebe BCC
+      case 3:
+        if(c==UA[3])
+          state = 4;
+        else
+          state=0;
+      break;
+      //recebe FLAG final
+      case 4:
+        if(c==UA[4])
+          connectionEstabilished=1;
+        else
+          state = 0;
+      break;
+    }
+  }
 }
