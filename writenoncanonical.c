@@ -90,7 +90,7 @@ int send_data(char * arg)
 
     printf("New termios structure set\n");
 
-  //write(fd,UA,5);
+  res = write(fd,buf,255);
   //alarm(3);
 
   printf("%d bytes written\n", res);

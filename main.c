@@ -18,8 +18,6 @@ int main(int argc, char** argv){
    }
 
   unsigned int state=0;
-  while(state!=5)
-  {
     if(strcmp(argv[2],"S")==0){
       printf("MODE: SENDER\n");
       result=send_data(argv[1]);
@@ -28,6 +26,5 @@ int main(int argc, char** argv){
           printf("MODE: RECEIVER\n");
       result=receive_data(argv[1]);
     }
-  }
    return state;
 }
