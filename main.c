@@ -4,6 +4,8 @@
 
 #include "writenoncanonical.h"
 #include "noncanonical.h"
+#include "macros.h"
+#include "stateMachine.h"
 
 
 
@@ -17,7 +19,14 @@ int main(int argc, char** argv){
      exit(1);
    }
 
+ unsigned char SET[5];
+    SET[0] = FLAG;
+    SET[1] = A;
+    SET[2] = setC;
+    SET[3]= SET[1]^SET[2];
+    SET[4] = FLAG;
   unsigned int state=0;
+  while(state!=5){
     if(strcmp(argv[2],"S")==0){
       printf("MODE: SENDER\n");
       result=send_data(argv[1]);
@@ -26,5 +35,7 @@ int main(int argc, char** argv){
           printf("MODE: RECEIVER\n");
       result=receive_data(argv[1]);
     }
+  state=stateMachine(result, state, SET);
+  }
    return state;
 }

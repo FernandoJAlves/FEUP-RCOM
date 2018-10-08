@@ -1,4 +1,4 @@
-SRC = main.c noncanonical.c writenoncanonical.c
+SRC = main.c noncanonical.c writenoncanonical.c stateMachine.c
 SDR = writenoncanonical.c
 RVR = noncanonical.c
 
