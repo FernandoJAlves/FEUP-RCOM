@@ -20,10 +20,11 @@ typedef struct{
     unsigned int timeout; /*Valor do temporizador: 1 s*/
     unsigned int numTransmissions; /*Número de tentativas em caso de falha*/
     int status;
+    struct termios oldPortSettings;
 } LinkLayer;
 LinkLayer link_layer;
 
-
+int setTermios(int fd);
 int llopen(int porta, int status);
 // argumentos
 // –porta: COM1, COM2, ... 
