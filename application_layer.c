@@ -1,9 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#include "writenoncanonical.h"
-#include "noncanonical.h"
 #include "macros.h"
 #include "stateMachine.h"
 #include "data_link.h"
