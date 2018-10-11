@@ -12,7 +12,7 @@ int llopen(int porta, int status){
       perror("setting termios settings");
       return -1;
     }
-    if(link_layer.status){
+    if(!link_layer.status){
      //send SET to statemachine
      unsigned char SET[5];
      SET[0] = FLAG;
