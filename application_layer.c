@@ -17,7 +17,7 @@ int main(int argc, char** argv){
      exit(1);
     }
 
-  
+
     if(!strcmp(argv[1],"1")){
       link_layer.port=COM_1;
     }
@@ -26,13 +26,16 @@ int main(int argc, char** argv){
     }
     else{
       perror("porta 1 ou 2 \n");
+      return -1;
     }
     if(!strcmp(argv[2],"S")){
       link_layer.status=TRANSMITTER;
-    
+      llopen(1,2);
+
     }
     else if(!strcmp(argv[2],"R")){
       link_layer.status=RECEIVER;
+      llopen(1,2);
     }
     else{
       perror("S or R\n");

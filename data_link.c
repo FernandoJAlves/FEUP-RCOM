@@ -35,7 +35,7 @@ int llopen(int porta, int status){
         SET[4] = FLAG;
         char buf[255];
         int curr_level=0;
-        while (curr_level!=5) {       /* loop for input */
+        while (curr_level<5) {       /* loop for input */
           res = read(fd,buf,1);
           if(res>0){
             curr_level=stateMachine(buf[0],curr_level,SET);
