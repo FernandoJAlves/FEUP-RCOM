@@ -24,6 +24,7 @@ int llopen(int porta, int status){
      res=write(fd,SET,5);
 
      //waitforUA;
+     //RECIEVE UA
     }
     else{
         //TODO UA protocol
@@ -43,6 +44,8 @@ int llopen(int porta, int status){
             printf("\nnivel %d",curr_level);
           }
         }
+
+        ///SEND UA
         // res=write(fd,UA,5);
     }
     return fd;
