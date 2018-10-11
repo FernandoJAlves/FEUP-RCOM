@@ -1,3 +1,4 @@
+#ifndef DATA_LINK_H_
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -24,10 +25,12 @@ typedef struct{
 } LinkLayer;
 LinkLayer link_layer;
 
+
+
 int setTermios(int fd);
 int llopen(int porta, int status);
 // argumentos
-// –porta: COM1, COM2, ... 
+// –porta: COM1, COM2, ...
 // –flag: TRANSMITTER / RECEIVER
 // retorno
 // –identificador da ligação de dados
@@ -52,3 +55,6 @@ int llread(int fd, char * buffer);
 // – comprimento do array
 // (número de caracteres lidos)
 // – valor negativo em caso de erro
+
+
+#endif
