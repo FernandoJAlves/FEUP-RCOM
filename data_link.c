@@ -12,7 +12,7 @@ int llopen(int porta, int status){
       perror("setting termios settings");
       return -1;
     }
-    if(TRANSMITTER){
+    if(link_layer.status){
      //send SET to statemachine
      unsigned char SET[5];
      SET[0] = FLAG;
@@ -20,8 +20,9 @@ int llopen(int porta, int status){
      SET[2] = setC;
      SET[3]= SET[1]^SET[2];
      SET[4] = FLAG;
+     printf("chegou");
      res=write(fd,SET,5);
-     sleep(1); //for testing
+
      //waitforUA;
     }
     else{
