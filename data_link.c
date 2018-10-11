@@ -1,7 +1,7 @@
 #include "data_link.h"
 
 int llopen(int porta, int status){
-    int fd;
+    int fd,res;
     /*
       Open serial port device for reading and writing and not as controlling tty
       because we don't want to get killed if linenoise sends CTRL-C.
@@ -13,10 +13,36 @@ int llopen(int porta, int status){
       return -1;
     }
     if(TRANSMITTER){
-        //TODO set protocol
+     //send SET to statemachine
+     unsigned char SET[5];
+     SET[0] = FLAG;
+     SET[1] = A;
+     SET[2] = setC;
+     SET[3]= SET[1]^SET[2];
+     SET[4] = FLAG;
+     res=write(fd,SET,5);
+     sleep(1); //for testing
+     //waitforUA;
     }
     else{
         //TODO UA protocol
+        //le o set
+        unsigned char SET[5];
+        SET[0] = FLAG;
+        SET[1] = A;
+        SET[2] = setC;
+        SET[3]= SET[1]^SET[2];
+        SET[4] = FLAG;
+        char buf[255];
+        int curr_level=0;
+        while (curr_level!=5) {       /* loop for input */
+          res = read(fd,buf,1);
+          if(res>0){
+            curr_level=stateMachine(buf[0],curr_level,SET);
+            printf("\nnivel %d",curr_level);
+          }
+        }
+        // res=write(fd,UA,5);
     }
     return fd;
   }
@@ -39,8 +65,8 @@ int setTermios(int fd){
 
   newtio.c_cc[VTIME]    = 0;   /* inter-character timer unused */
   newtio.c_cc[VMIN]     = 1;   /* blocking read until 5 chars received */
-/* 
-  VTIME e VMIN devem ser alterados de forma a proteger com um temporizador a 
+/*
+  VTIME e VMIN devem ser alterados de forma a proteger com um temporizador a
   leitura do(s) pr�ximo(s) caracter(es)
 */
   tcflush(fd, TCIOFLUSH);
