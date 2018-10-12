@@ -26,16 +26,17 @@ int llopen(int porta, int status){
       return -1;
     }
     if(!link_layer.status){//EMISSOR
-     printf("chegou");
+
      res=write(fd,SET,5);
+     printf("Sent SET,waiting for receiver\n");
     //RECIEVE UA
      while (curr_level<5) {       /* loop for input */
         res = read(fd,buf,1);
         if(res>0){
           curr_level=stateMachine(buf[0],curr_level,UA);
-          printf("\nnivel %d",curr_level);
         }
       }
+          printf("received UA");
     }
     else{//RECETOR
         //TODO UA protocol
@@ -44,10 +45,10 @@ int llopen(int porta, int status){
           res = read(fd,buf,1);
           if(res>0){
             curr_level=stateMachine(buf[0],curr_level,SET);
-            printf("\nnivel %d",curr_level);
           }
         }
         ///SEND UA
+        printf("sent UA");
         res=write(fd,UA,5);
     }
     return fd;
