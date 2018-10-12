@@ -2,6 +2,19 @@
 
 int llopen(int porta, int status){
     int fd,res;
+    SET[0] = FLAG;
+    SET[1] = A;
+    SET[2] = setC;
+    SET[3]= SET[1]^SET[2];
+    SET[4] = FLAG;
+
+    UA[0] = FLAG;
+    UA[1] = A;
+    UA[2] = uaC;
+    UA[3]= UA[1]^UA[2];
+    UA[4] = FLAG;
+    char buf[255];
+    int curr_level=0;
     /*
       Open serial port device for reading and writing and not as controlling tty
       because we don't want to get killed if linenoise sends CTRL-C.
@@ -12,31 +25,21 @@ int llopen(int porta, int status){
       perror("setting termios settings");
       return -1;
     }
-    if(!link_layer.status){
-     //send SET to statemachine
-     unsigned char SET[5];
-     SET[0] = FLAG;
-     SET[1] = A;
-     SET[2] = setC;
-     SET[3]= SET[1]^SET[2];
-     SET[4] = FLAG;
+    if(!link_layer.status){//EMISSOR
      printf("chegou");
      res=write(fd,SET,5);
-
-     //waitforUA;
-     //RECIEVE UA
+    //RECIEVE UA
+     while (curr_level<5) {       /* loop for input */
+        res = read(fd,buf,1);
+        if(res>0){
+          curr_level=stateMachine(buf[0],curr_level,UA);
+          printf("\nnivel %d",curr_level);
+        }
+      }
     }
-    else{
+    else{//RECETOR
         //TODO UA protocol
         //le o set
-        unsigned char SET[5];
-        SET[0] = FLAG;
-        SET[1] = A;
-        SET[2] = setC;
-        SET[3]= SET[1]^SET[2];
-        SET[4] = FLAG;
-        char buf[255];
-        int curr_level=0;
         while (curr_level<5) {       /* loop for input */
           res = read(fd,buf,1);
           if(res>0){
@@ -44,9 +47,8 @@ int llopen(int porta, int status){
             printf("\nnivel %d",curr_level);
           }
         }
-
         ///SEND UA
-        // res=write(fd,UA,5);
+        res=write(fd,UA,5);
     }
     return fd;
   }

@@ -56,5 +56,6 @@ int llread(int fd, char * buffer);
 // (número de caracteres lidos)
 // – valor negativo em caso de erro
 
-
+unsigned char SET[5];
+unsigned char UA[5];
 #endif
