@@ -1,4 +1,4 @@
-SRC = application_layer.c data_link.c  stateMachine.c
+SRC = application_layer.c data_link.c  stateMachine.c reader.c writer.c
 
 
 all:

@@ -12,9 +12,11 @@
 #include <string.h>
 #include <signal.h>
 
+void data_reader(int argc, char * argv[]);
+
 //       Data Link Layer Functions
 
-int llopen(int porta, int status);
+int llopenR(int porta, int status);
 // argumentos
 // –porta: COM1, COM2, ...
 // –flag: TRANSMITTER / RECEIVER

@@ -1,14 +1,15 @@
 #include "reader.h"
 #include "data_link.h"
+#include "stateMachine.h"
 
-void data_reader(int argc, int argv[]){
+void data_reader(int argc, char * argv[]){
 
-    llopen(1,2);
+    llopenR(1,2);
 
 }
 
 
-int llopen(int porta, int status){
+int llopenR(int porta, int status){
     int res;
     SET[0] = FLAG;
     SET[1] = A;

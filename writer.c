@@ -1,5 +1,6 @@
 #include "writer.h"
 #include "data_link.h"
+#include "stateMachine.h"
 
 int numAttempts=0;
 int isConnected=0;
@@ -24,12 +25,12 @@ void timeout(){
 //main function called after choosing sender/receiver
 void data_writer(int argc, char * argv[]){
 
-  llopen(1,2);
+  llopenW(1,2);
 
 }
 
 
-int llopen(int porta, int status){
+int llopenW(int porta, int status){
     int res;
     SET[0] = FLAG;
     SET[1] = A;
