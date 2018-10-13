@@ -56,6 +56,11 @@ int llread(int fd, char * buffer);
 // (número de caracteres lidos)
 // – valor negativo em caso de erro
 
+ void connect();
+ //estabelec ligação entre o emissor e o receptor
+
 unsigned char SET[5];
 unsigned char UA[5];
+
+int fd;
 #endif

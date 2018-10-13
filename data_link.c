@@ -1,8 +1,36 @@
 #include "data_link.h"
 #include "stateMachine.h"
+#include <signal.h>
+
+
+int numAlarms=0;
+int isConnected=0;
+
+void timeout(){
+
+  printf("Alarm=%d", numAlarms);
+
+  //se ainda nao tivermos recebido UA e a soma dos alarmes for inferior a 4
+  if((!isConnected) && (numAlarms < 4))
+  {
+    numAlarms++;
+    connect();
+  }
+  else
+  {
+    printf("Operation failed!\n");
+    exit(-1);
+  }
+
+}
+
+ void connect(){
+    write(fd,SET,5);
+    alarm(3);
+ }
 
 int llopen(int porta, int status){
-    int fd,res;
+    int res;
     SET[0] = FLAG;
     SET[1] = A;
     SET[2] = setC;
@@ -27,8 +55,9 @@ int llopen(int porta, int status){
       return -1;
     }
     if(!link_layer.status){//EMISSOR
-
+     (void) signal(SIGALRM,timeout);
      res=write(fd,SET,5);
+     alarm(3);
      printf("Sent SET,waiting for receiver\n");
     //RECIEVE UA
      while (curr_level<5) {       /* loop for input */
@@ -48,6 +77,7 @@ int llopen(int porta, int status){
             curr_level=stateMachine(buf[0],curr_level,SET);
           }
         }
+        isConnected = 1;
         ///SEND UA
         printf("sent UA");
         res=write(fd,UA,5);
