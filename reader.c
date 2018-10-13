@@ -2,6 +2,20 @@
 #include "data_link.h"
 #include "stateMachine.h"
 
+
+/*
+Tramas I recebidas sem erros detectados no cabeçalho e no campo de dados
+são aceites para processamento
+– Se se tratar duma nova trama, o campo de dados é aceite (e passado à Aplicação),
+e a trama deve ser confirmada com RR
+– Se se tratar dum duplicado, o campo de dados é descartado, mas deve fazer-se
+confirmação da trama com RR
+» Tramas I sem erro detectado no cabeçalho mas com erro detectado (pelo
+respectivo BCC) no campo de dados – o campo de dados é descartado, mas o
+campo de controlo pode ser usado para desencadear uma acção adequada
+– Se se tratar duma nova trama, é conveniente fazer um pedido de retransmissão
+com REJ, o que permite antecipar a ocorrência de time-out no em
+*/
 void data_reader(int argc, char * argv[]){
 
     llopenR(1,2);
@@ -10,17 +24,18 @@ void data_reader(int argc, char * argv[]){
 
 int checkBCC2(unsigned char *packet, int size)
 {
-  unsigned char byte = packet[0];
-  for (int i = 0; i < size - 1; i++)
-  {
-    byte = byte^packet[i];
-  }
-  if (byte == packet[size - 1])
-  {
-    return 1;
-  }
-  else
-    return 0;
+  // unsigned char byte = packet[0];
+  // int i = 0;
+  // for (i; i < size - 1; i++)
+  // {
+  //   byte = byte^packet[i];
+  // }
+  // if (byte == packet[size - 1])
+  // {
+  //   return 1;
+  // }
+  // else
+  return 0;
 }
 
 int llread(unsigned char c, int curr_state, unsigned char arg[]){
@@ -117,4 +132,3 @@ int llopenR(int porta, int status){
     }
     return fd;
   }
-

@@ -25,13 +25,15 @@ void timeout(){
 //main function called after choosing sender/receiver
 void data_writer(int argc, char * argv[]){
 
-  int fd;
+  //int fd;
+//  printf("argv[1] %s\n",argv[0]);
 
-  fd = open(argv[1], O_RDWR | O_NOCTTY);
-  if(fd < 0){
-    printf("Error opening serial port!");
-    return;
-  }
+//llopen
+  // fd = open(argv[1], O_RDWR | O_NOCTTY);
+  // if(fd < 0){
+  //   printf("Error opening serial port!");
+  //   return;
+  // }
 
   llopenW(1,2);
 
@@ -96,10 +98,10 @@ char * readFile(char * fileName, long int * fileSize){
 
     if((f = fopen(fileName, "rb")) == NULL){
         perror("Error while opening the file");
-        //return 
+        //return
     }
     stat(fileName, &data); //get the file metadata
-    
+
     *fileSize = data.st_size;
 
     printf("File size is %ld bytes\n", *fileSize);

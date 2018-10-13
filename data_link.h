@@ -34,7 +34,7 @@ int setTermios(int fd);
 
 
 
-int llwrite(int fd, char * buffer, int length);
+//int llwrite(int fd, char * buffer, int length);
 // argumentos
 // – fd: identificador da ligação de dados
 // – buffer: array de caracteres a transmitir
@@ -44,7 +44,7 @@ int llwrite(int fd, char * buffer, int length);
 // – valor negativo em caso de erro
 
 
-int llread(int fd, char * buffer);
+//int llread(int fd, char * buffer);
 // argumentos
 // – fd: identificador da ligação de dados
 // – buffer: array de caracteres recebidos
