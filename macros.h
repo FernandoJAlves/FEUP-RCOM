@@ -5,6 +5,7 @@
 #define A 0x03
 #define uaC 0x01
 #define setC 0x03
+#define ESCAPE 0x7D
 
 
 /*
