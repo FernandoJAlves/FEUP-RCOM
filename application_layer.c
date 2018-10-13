@@ -30,12 +30,12 @@ int main(int argc, char** argv){
     }
     if(!strcmp(argv[2],"S")){
       link_layer.status=TRANSMITTER;
-      llopen(1,2);
+      data_writer(argc, argv);
 
     }
     else if(!strcmp(argv[2],"R")){
       link_layer.status=RECEIVER;
-      llopen(1,2);
+      data_reader(argc, argv);
     }
     else{
       perror("S or R\n");

@@ -15,6 +15,7 @@
 #define RECEIVER 1
 #define COM_1 "/dev/ttyS0"
 #define COM_2 "/dev/ttyS1"
+
 typedef struct{
     char * port; /*Dispositivo /dev/ttySx, x = 0, 1*/
     int baudRate; /*Velocidade de transmissão*/
@@ -26,16 +27,11 @@ typedef struct{
 } LinkLayer;
 LinkLayer link_layer;
 
-
-
 int setTermios(int fd);
-int llopen(int porta, int status);
-// argumentos
-// –porta: COM1, COM2, ...
-// –flag: TRANSMITTER / RECEIVER
-// retorno
-// –identificador da ligação de dados
-// –valor negativo em caso de erro
+
+
+
+
 
 
 int llwrite(int fd, char * buffer, int length);
@@ -60,8 +56,7 @@ int llread(int fd, char * buffer);
  void connect();
  //estabelec ligação entre o emissor e o receptor
 
-unsigned char SET[5];
-unsigned char UA[5];
 
-int fd;
+
+
 #endif

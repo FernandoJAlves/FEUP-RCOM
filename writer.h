@@ -12,4 +12,26 @@
 #include <string.h>
 #include <signal.h>
 
+//       Data Link Layer Functions
+
+int llopen(int porta, int status);
+// argumentos
+// –porta: COM1, COM2, ...
+// –flag: TRANSMITTER / RECEIVER
+// retorno
+// –identificador da ligação de dados
+// –valor negativo em caso de erro
+
+
+
+unsigned char SET[5];
+unsigned char UA[5];
+int fd;
+
+
+//      Application Layer Functions
+
+
+
+
 #endif
