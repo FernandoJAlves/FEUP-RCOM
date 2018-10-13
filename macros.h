@@ -1,4 +1,5 @@
 #ifndef MACROS_H_
+#define MACROS_H_
 
 #define FLAG 0x07E
 
