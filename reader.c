@@ -8,6 +8,74 @@ void data_reader(int argc, char * argv[]){
 
 }
 
+int checkBCC2(unsigned char *packet, int size)
+{
+  unsigned char byte = packet[0];
+  for (int i = 0; i < size - 1; i++)
+  {
+    byte = byte^packet[i];
+  }
+  if (byte == packet[size - 1])
+  {
+    return 1;
+  }
+  else
+    return 0;
+}
+
+int llread(unsigned char c, int curr_state, unsigned char arg[]){
+  printf("State: %d\n", curr_state);
+  switch(curr_state){
+    case 0:
+      if(c == arg[0]){
+        curr_state = 1;
+      }
+      break;
+    case 1:
+      if(c == arg[0]){
+        curr_state = 1;
+      }
+      else if(c == arg[1]){
+        curr_state = 2;
+      }
+      else{
+        curr_state = 0;
+      }
+      break;
+    case 2:
+      if(c == arg[0]){
+        curr_state = 1;
+      }
+      else if(c == arg[2]){
+        curr_state = 3;
+      }
+      else{
+        curr_state = 0;
+      }
+      break;
+    case 3:
+      if(c == arg[0]){
+        curr_state = 1;
+      }
+      else if(c == arg[3]){
+        curr_state = 4;
+      }
+      else{
+        curr_state = 0;
+      }
+      break;
+    case 4:
+      if(c == arg[0]){
+        return curr_state=5;
+      }
+      else{
+        curr_state = 0;
+      }
+      break;
+  }
+  return curr_state;
+}
+
 
 int llopenR(int porta, int status){
     int res;
