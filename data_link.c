@@ -3,17 +3,15 @@
 #include <signal.h>
 
 
-int numAlarms=0;
+int numAttempts=0;
 int isConnected=0;
 
 void timeout(){
 
-  printf("Alarm=%d", numAlarms);
-
-  //se ainda nao tivermos recebido UA e a soma dos alarmes for inferior a 4
-  if((!isConnected) && (numAlarms < 4))
+  if((!isConnected) && (numAttempts < 4))
   {
-    numAlarms++;
+    numAttempts++;
+    printf("Attempt number=%d\n", numAttempts);
     connect();
   }
   else
