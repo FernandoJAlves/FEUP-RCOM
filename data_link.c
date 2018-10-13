@@ -1,4 +1,5 @@
 #include "data_link.h"
+#include "stateMachine.h"
 
 int llopen(int porta, int status){
     int fd,res;
