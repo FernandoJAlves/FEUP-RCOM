@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "data_link.h": "c"
+        "data_link.h": "c",
+        "writer.h": "c"
     }
 }
