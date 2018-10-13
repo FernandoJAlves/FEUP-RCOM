@@ -33,7 +33,7 @@ int fd;
 
 //      Application Layer Functions
 
-
+char * readFile(char * fileName, long int * fileSize);
 
 
 #endif

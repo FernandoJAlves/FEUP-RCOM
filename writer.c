@@ -25,6 +25,14 @@ void timeout(){
 //main function called after choosing sender/receiver
 void data_writer(int argc, char * argv[]){
 
+  int fd;
+
+  fd = open(argv[1], O_RDWR | O_NOCTTY);
+  if(fd < 0){
+    printf("Error opening serial port!");
+    return;
+  }
+
   llopenW(1,2);
 
 }
@@ -53,7 +61,7 @@ int llopenW(int porta, int status){
     fd = open(link_layer.port, O_RDWR | O_NOCTTY );
     if (fd <0) {perror(link_layer.port); exit(-1); }
     if(setTermios(fd)<0){
-      perror("setting termios settings");
+      perror("Setting termios settings");
       return -1;
     }
     if(!link_layer.status){//EMISSOR
@@ -68,7 +76,7 @@ int llopenW(int porta, int status){
           curr_level=stateMachine(buf[0],curr_level,UA);
         }
       }
-          printf("received UA");
+          printf("Received UA\n");
     }
 
     isConnected = 1;
@@ -79,4 +87,28 @@ int llopenW(int porta, int status){
 void connect(){
     write(fd,SET,5);
     alarm(3);
+}
+
+char * readFile(char * fileName, long int * fileSize){
+
+    FILE * f;
+    struct stat data;
+
+    if((f = fopen(fileName, "rb")) == NULL){
+        perror("Error while opening the file");
+        //return 
+    }
+    stat(fileName, &data); //get the file metadata
+    
+    *fileSize = data.st_size;
+
+    printf("File size is %ld bytes\n", *fileSize);
+
+    //TODO maybe replace by unsigned
+    char * fileData = (char*)malloc(*fileSize);
+
+    //TODO Ler o ficheiro, talvez com fread?
+
+    return fileData;
+
 }
