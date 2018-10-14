@@ -15,6 +15,11 @@ respectivo BCC) no campo de dados – o campo de dados é descartado, mas o
 campo de controlo pode ser usado para desencadear uma acção adequada
 – Se se tratar duma nova trama, é conveniente fazer um pedido de retransmissão
 com REJ, o que permite antecipar a ocorrência de time-out no em
+
+Em particular, os mecanismos de numeração de tramas I e de pacotes de dados
+são totalmente independentes e nenhuma relação deve ser estabelecida entre eles
+Iframe
+
 */
 void data_reader(int argc, char * argv[]){
 
@@ -38,7 +43,17 @@ int checkBCC2(unsigned char *packet, int size)
   return 0;
 }
 
-int llread(unsigned char c, int curr_state, unsigned char arg[]){
+int llread(int fd, unsigned char * resPacket){
+  //TODO:
+  /*
+    //check if errors on HEADER (Iframe) FLAG, ASEND SET[1]^SET[2];
+    //de-stuff packets
+    //checkBCC2
+    //set sequence number and treat information errors
+  */
+  //read(fd, &buf, 1)
+  //FLAG, ASEND SET[1]^SET[2];
+  //read Information 
   printf("State: %d\n", curr_state);
   switch(curr_state){
     case 0:
