@@ -1,6 +1,8 @@
 {
     "files.associations": {
         "data_link.h": "c",
-        "writer.h": "c"
+        "writer.h": "c",
+        "signal.h": "c",
+        "stat.h": "c"
     }
 }

@@ -25,17 +25,16 @@ void timeout(){
 //main function called after choosing sender/receiver
 void data_writer(int argc, char * argv[]){
 
-  //int fd;
-//  printf("argv[1] %s\n",argv[0]);
+    int fd;
 
-//llopen
-  // fd = open(argv[1], O_RDWR | O_NOCTTY);
-  // if(fd < 0){
-  //   printf("Error opening serial port!");
-  //   return;
-  // }
+    if(llopenW(1,2) != 0){
+      printf("Error in llopen()!\n");
+      return 1;
+    }
 
-  llopenW(1,2);
+    int file_name_size = strlen(argv[3]);
+    unsigned char * file_name = (unsigned char *)malloc(file_name_size);
+    file_name = (unsigned char *)argv[3];
 
 }
 
@@ -91,14 +90,18 @@ void connect(){
     alarm(3);
 }
 
-char * readFile(char * fileName, long int * fileSize){
+
+
+
+
+unsigned char * readFile(unsigned char * fileName, long int * fileSize){
 
     FILE * f;
     struct stat data;
 
     if((f = fopen(fileName, "rb")) == NULL){
         perror("Error while opening the file");
-        //return
+        //return ?
     }
     stat(fileName, &data); //get the file metadata
 
@@ -107,10 +110,32 @@ char * readFile(char * fileName, long int * fileSize){
     printf("File size is %ld bytes\n", *fileSize);
 
     //TODO maybe replace by unsigned
-    char * fileData = (char*)malloc(*fileSize);
+    unsigned char * fileData = (unsigned char*)malloc(*fileSize);
 
     //TODO Ler o ficheiro, talvez com fread?
 
     return fileData;
+
+}
+
+unsigned char * makeControlPackage_I(long int fileSize, unsigned char * fileName, int fileName_size, int * finalSize, unsigned char start_or_end){
+
+    *finalSize = fileName_size + 9 * sizeof(unsigned char);
+    unsigned char * finalPackage = (unsigned char * )malloc(*finalSize);
+
+    if(start_or_end != CTRL_C_START && start_or_end != CTRL_C_END){
+      printf("Invalid value in start_or_end!");
+    }
+    else{
+      finalPackage[0] = start_or_end; 
+    }
+
+    
+
+
+
+
+
+
 
 }
