@@ -29,43 +29,47 @@ void data_reader(int argc, char * argv[]){
 
 int checkBCC2(unsigned char *packet, int size)
 {
-  // unsigned char byte = packet[0];
-  // int i = 0;
-  // for (i; i < size - 1; i++)
-  // {
-  //   byte = byte^packet[i];
-  // }
-  // if (byte == packet[size - 1])
-  // {
-  //   return 1;
-  // }
-  // else
-  return 0;
+  unsigned char byte = packet[0];
+  for (int i = 1; i < size - 1; i++){
+      byte = byte^packet[i];
+  }
+  if (byte == packet[size - 1]){
+    return 1;
+  }
+  else return 0;
 }
 
-int llread(int fd, unsigned char * resPacket){
-  //TODO:
-  /*
-    //check if errors on HEADER (Iframe) FLAG, ASEND SET[1]^SET[2];
-    //de-stuff packets
-    //checkBCC2
-    //set sequence number and treat information errors
-  */
-  //read(fd, &buf, 1)
-  //FLAG, ASEND SET[1]^SET[2];
-  //read Information 
-  printf("State: %d\n", curr_state);
-  switch(curr_state){
+int sendC(int fd, unsigned char controlField){
+  unsigned char controlPacket[5];
+  controlPacket[0] = FLAG;
+  controlPacket[1] = Arec;
+  controlPacket[2] = controlField;
+  controlPacket[3] = controlPacket[1] ^ controlPacket[2];
+  controlPacket[4] = FLAG;
+  write(fd, controlPacket, 5);
+}
+
+int llread(int fd, unsigned int  * size){
+  int curr_state = 0;
+  int sucess = 0;
+  int tramaNum = 0;
+  unsigned char controlField;
+  unsigned char c;
+  unsigned char *frame = (unsigned char *)malloc(0);
+  int bccCheckedData;
+  while(sucess){
+    read(fd,&c,1);
+      switch(curr_state){
     case 0:
-      if(c == arg[0]){
+      if(c == FLAG){
         curr_state = 1;
       }
       break;
     case 1:
-      if(c == arg[0]){
+      if(c == FLAG){
         curr_state = 1;
       }
-      else if(c == arg[1]){
+      else if(c == Aemiss){
         curr_state = 2;
       }
       else{
@@ -73,35 +77,74 @@ int llread(int fd, unsigned char * resPacket){
       }
       break;
     case 2:
-      if(c == arg[0]){
-        curr_state = 1;
+      if(c == C0){
+        controlField = c;
+        tramaNum = 0;
+        curr_state = 3;
       }
-      else if(c == arg[2]){
+      else if(c == C1){
+        controlField = c;
+        tramaNum = 1;
         curr_state = 3;
       }
       else{
-        curr_state = 0;
+        if (c == FLAG)
+          curr_state = 1;
+        else
+          curr_state = 0;
       }
       break;
     case 3:
-      if(c == arg[0]){
-        curr_state = 1;
-      }
-      else if(c == arg[3]){
-        curr_state = 4;
-      }
-      else{
-        curr_state = 0;
-      }
-      break;
+    if (c == (Aemiss ^ controlField))
+      curr_state = 4;
+    else
+      curr_state = 0;
+    break;
     case 4:
-      if(c == arg[0]){
+    if (c == FLAG)
+    {
+        if (checkBCC2(frame, *size)){
+          if (tramaNum == 0)
+            sendC(fd, RR0);
+          else
+            sendC(fd, RR1);
+
+          curr_state = 6;
+          bccCheckedData = 1;
+          printf("Enviou RR, T: %d\n", tramaNum);
+        }
+        else
+        {
+          if (tramaNum == 0)
+            sendC(fd, REJ0);
+          else
+            sendC(fd, REJ1);
+          curr_state = 6;
+          bccCheckedData = 0;
+          printf("Enviou REJ, T: %d\n", tramaNum);
+        }
+      }
+      else if (c == ESCAPE_FLAG)
+      {
+        //Distuffing?
+        curr_state = 5;
+      }
+      else
+      {
+        (*size)++;
+        frame = (unsigned char *)realloc(frame, *size);
+        frame[*size - 1] = c;
+      }
+    break;
+    case 5:
+      if(c == FLAG){
         return curr_state=5;
       }
       else{
         curr_state = 0;
       }
       break;
+  }
   }
   return curr_state;
 }
@@ -110,13 +153,13 @@ int llread(int fd, unsigned char * resPacket){
 int llopenR(int porta, int status){
     int res;
     SET[0] = FLAG;
-    SET[1] = A;
+    SET[1] = Aemiss;
     SET[2] = setC;
     SET[3]= SET[1]^SET[2];
     SET[4] = FLAG;
 
     UA[0] = FLAG;
-    UA[1] = A;
+    UA[1] = Arec;
     UA[2] = uaC;
     UA[3]= UA[1]^UA[2];
     UA[4] = FLAG;
