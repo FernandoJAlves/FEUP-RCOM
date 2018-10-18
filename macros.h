@@ -6,7 +6,7 @@
 #define Arec 0x01
 #define uaC 0x01
 #define setC 0x03
-#define ESCAPE 0x7D
+#define ESCAPEBYTE 0x7D
 
 #define C0 0x00
 #define C1 0x40

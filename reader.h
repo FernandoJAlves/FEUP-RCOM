@@ -24,7 +24,7 @@ int llopenR(int porta, int status);
 // –identificador da ligação de dados
 // –valor negativo em caso de erro
 
-
+unsigned char * llread(int fd, unsigned int  * size);
 
 unsigned char SET[5];
 unsigned char UA[5];

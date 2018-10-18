@@ -51,10 +51,12 @@ int sendC(int fd, unsigned char controlField){
   controlPacket[2] = controlField;
   controlPacket[3] = controlPacket[1] ^ controlPacket[2];
   controlPacket[4] = FLAG;
-  write(fd, controlPacket, 5);
+  int bytes=write(fd, controlPacket, 5);
+  return bytes;
+  
 }
 
-int llread(int fd, unsigned int  * size){
+unsigned char * llread(int fd, unsigned int  * size){
   int curr_state = 0;
   int sucess = 0;
   int tramaNum = 0;
@@ -62,101 +64,118 @@ int llread(int fd, unsigned int  * size){
   unsigned char c;
   unsigned char *frame = (unsigned char *)malloc(0);
   int bccCheckedData;
-  while(curr_state<=5){
-    read(fd,&c,1);
+  while(sucess){
+	read(fd,&c,1);
       switch(curr_state){
-        case 0:
-          if(c == FLAG){
-            curr_state = 1;
-          }
-          break;
-        case 1:
-          if(c == FLAG){
-            curr_state = 1;
-          }
-          else if(c == Aemiss){
-            curr_state = 2;
-          }    
-          else if(c == C1){
-            controlField = c;
-            tramaNum = 1;
-            curr_state = 3;
-          }
-          else{
-            if (c == FLAG)
-              curr_state = 1;
-            else
-              curr_state = 0;
-          }
-        break;
-        case 3:
-          if (c == (Aemiss ^ controlField))
-            curr_state = 4;
-          else
-            curr_state = 0;
-        break;
-        case 4:
-          if (c == FLAG){
-              if (checkBCC2(frame, *size)){
-                if (tramaNum == 0)ESCAPE_FLAG
-                  sendC(fd, RR0);
-                else
-                  sendC(fd, RR1);
+		case 0:
+		  if(c == FLAG){
+		    curr_state = 1;
+		  }
+		break;
+		case 1:
+		  if(c == FLAG){
+		    curr_state = 1;
+		  }
+		  else if(c == Aemiss){
+		    curr_state = 2;
+		  }
+		  else{
+		    curr_state = 0;
+		  }
+		break;
+		case 2:
+		  if(c == C0){
+		    controlField = c;
+		    tramaNum = 0;
+		    curr_state = 3;
+		  }
+		  else if(c == C1){
+		    controlField = c;
+		    tramaNum = 1;
+		    curr_state = 3;
+		  }
+		  else{
+		    if (c == FLAG)
+		      curr_state = 1;
+		    else
+		      curr_state = 0;
+		  }
+	    break;
+		case 3:
+		if (c == (Aemiss ^ controlField))
+		  curr_state = 4;
+		else
+		  curr_state = 0;
+		break;
+		case 4:
+		  if (c == FLAG){
+				if (checkBCC2(frame, *size)){
+				  if (tramaNum == 0)
+				    sendC(fd, RR0);
+				  else
+				    sendC(fd, RR1);
 
-                curr_state = 6;
-                bccCheckedData = 1ESCAPE_FLAG
-                printf("Enviou RR, T: %d\n", tramaNum);
-              }
-              else
-              {
-                if (tramaNum == 0)
-                  sendC(fd, REJ0);
-                else
-                  sendC(fd, REJ1);
-                curr_state = 6;
-                bccCheckedData = 0;
-                printf("Enviou REJ, T: %d\n", tramaNum);
-              }
-            }
-            else if (c == ESCAPE)
-            {
-
-              curr_state = 5;
-            }
-            else
-            {
-              (*size)++;
-              frame = (unsigned char *)realloc(frame, *size);
-              frame[*size - 1] = c;
-            }
-        break;
-        case 5:
-          //DOES BYTE DE-STUFFING OP
-          if (c == ESCAPE_FLAG1)
-          {
-            message = (unsigned char *)realloc(message, ++(*sizeMessage));
-            message[*sizeMessage - 1] = FLAG;
-            curr_state=4;
-          }
-          else
-          {
-            if (c == ESCAPE_FLAG2)
-            {
-              message = (unsigned char *)realloc(message, ++(*sizeMessage));
-              message[*sizeMessage - 1] = ESCAPE;
-            }
-            else
-            {
-              perror("Non valid character after escape character");
-              exit(-1);
-            }
-          }
-          state = 4;
-        break;
-    }
+				  curr_state = 6;
+				  bccCheckedData = 1;
+				  printf("Enviou RR, T: %d\n", tramaNum);
+				}
+				else{
+				  if (tramaNum == 0)
+				    sendC(fd, REJ0);
+				  else
+				    sendC(fd, REJ1);
+				  curr_state = 6;
+				  bccCheckedData = 0;
+				  printf("Enviou REJ, T: %d\n", tramaNum);
+				}
+		  }
+		  else if (c == ESCAPEBYTE){ //goes to state 5 for byte de-stuffing
+		    curr_state = 5;
+		  }
+		  else{ //reads data
+		    (*size)++;
+		    frame = (unsigned char *)realloc(frame, *size);
+		    frame[*size - 1] = c;
+		  }
+		break;
+		case 5:
+		  //BYTE DE-STUFFING
+		  if (c == ESCAPE_FLAG1)
+		  {
+		    frame = (unsigned char *)realloc(frame, ++(*size));
+		    frame[*size - 1] = FLAG;
+		  }
+		  else
+		  {
+		    if (c == ESCAPE_FLAG2)
+		    {
+		      frame = (unsigned char *)realloc(frame, ++(*size));
+		      frame[*size - 1] = ESCAPEBYTE;
+		    }
+		    else
+		    {
+		      perror("Non valid character after escape character");
+		      exit(-1);
+		    }
+		  }
+		  curr_state = 4;
+	  	break;
+		case 6:
+			sucess=1;
+		break;
+  	}
   }
-  return curr_state;
+  frame = (unsigned char *)realloc(frame, *size - 1);
+
+  *size = *size - 1;
+  if (bccCheckedData)
+  {
+   
+  }
+
+	return frame;
 }
+
 
 
 int llopenR(int porta, int status){

@@ -42,13 +42,13 @@ void data_writer(int argc, char * argv[]){
 int llopenW(int porta, int status){
     int res;
     SET[0] = FLAG;
-    SET[1] = A;
+    SET[1] = Aemiss;
     SET[2] = setC;
     SET[3]= SET[1]^SET[2];
     SET[4] = FLAG;
 
     UA[0] = FLAG;
-    UA[1] = A;
+    UA[1] = Arec;
     UA[2] = uaC;
     UA[3]= UA[1]^UA[2];
     UA[4] = FLAG;
@@ -129,13 +129,5 @@ unsigned char * makeControlPackage_I(long int fileSize, unsigned char * fileName
     else{
       finalPackage[0] = start_or_end; 
     }
-
-    
-
-
-
-
-
-
 
 }
