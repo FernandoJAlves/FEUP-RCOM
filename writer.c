@@ -27,9 +27,9 @@ void data_writer(int argc, char * argv[]){
 
     int fd;
 
-    if(llopenW(1,2) != 0){
+    if((fd=llopenW(1,2)) != 0){
       printf("Error in llopen()!\n");
-      return 1;
+      return;
     }
 
     int file_name_size = strlen(argv[3]);
@@ -99,11 +99,11 @@ unsigned char * readFile(unsigned char * fileName, long int * fileSize){
     FILE * f;
     struct stat data;
 
-    if((f = fopen(fileName, "rb")) == NULL){
+    if((f = fopen(((const char *)fileName), "rb")) == NULL){
         perror("Error while opening the file");
         //return ?
     }
-    stat(fileName, &data); //get the file metadata
+    stat((const char*)fileName, &data); //get the file metadata
 
     *fileSize = data.st_size;
 
@@ -129,5 +129,7 @@ unsigned char * makeControlPackage_I(long int fileSize, unsigned char * fileName
     else{
       finalPackage[0] = start_or_end; 
     }
+
+	return NULL;
 
 }
