@@ -34,12 +34,13 @@ void data_writer(int argc, char * argv[]){
     unsigned char * file_name = (unsigned char *)malloc(file_name_size);
     file_name = (unsigned char *)pinguim;
     int final_size=0;
-    unsigned char * pointerToPacket=makeControlPackage_I(PINGUIM_SIZE,file_name, file_name_size, &final_size, 0x02);
-    printf("size of File %d",final_size);
-    llwriteW(fd,pointerToPacket,final_size);
+    unsigned char * read_file=readFile(file_name,(long int *) &final_size);
+    unsigned char * pointerToCtrlPacket=makeControlPackage_I(PINGUIM_SIZE,file_name, file_name_size,(int *) &final_size, 0x02);
+    printf("size of File %d  + %lu\n",final_size,sizeof(pointerToCtrlPacket));
+    llwriteW(fd,read_file,final_size);
 }
 int llwriteW(int fd, unsigned char * startOfFile,int finalSize){
-  unsigned char * BCC2s = (unsigned char *)malloc(sizeof(unsigned char));
+  //unsigned char * BCC2s = (unsigned char *)malloc(sizeof(unsigned char));
   return 0;
 }
 
@@ -126,14 +127,16 @@ unsigned char * makeControlPackage_I(long int fileSize, unsigned char * fileName
 
     *finalSize = fileName_size + 9 * sizeof(unsigned char);
     unsigned char * finalPackage = (unsigned char * )malloc(*finalSize);
-
-    if(start_or_end != CTRL_C_START && start_or_end != CTRL_C_END){
-      printf("Invalid value in start_or_end!");
+    if(start_or_end == CTRL_C_START){
+      finalPackage[0]=start_or_end;
     }
-    else{
+    else if(start_or_end == CTRL_C_END){
       finalPackage[0] = start_or_end;
     }
-
-	return NULL;
+    else {printf("Invalid value in start_or_end!");return NULL;}
+    finalPackage[1]=T1;
+    finalPackage[2]=L1;
+    //finalPackage[3]=
+    return NULL;
 
 }
