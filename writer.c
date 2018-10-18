@@ -35,9 +35,11 @@ void data_writer(int argc, char * argv[]){
     file_name = (unsigned char *)pinguim;
     int final_size=0;
     unsigned char * pointerToPacket=makeControlPackage_I(PINGUIM_SIZE,file_name, file_name_size, &final_size, 0x02);
+    printf("size of File %d",final_size);
     llwriteW(fd,pointerToPacket,final_size);
 }
 int llwriteW(int fd, unsigned char * startOfFile,int finalSize){
+  unsigned char * BCC2s = (unsigned char *)malloc(sizeof(unsigned char));
   return 0;
 }
 
