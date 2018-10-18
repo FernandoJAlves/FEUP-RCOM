@@ -7,10 +7,10 @@
 #define uaC 0x01
 #define setC 0x03
 #define ESCAPEBYTE 0x7D
-
+#define PINGUIM_SIZE 10968
 #define C0 0x00
 #define C1 0x40
-
+#define pinguim "pinguim.gif"
 #define RR0 0x05
 #define RR1 0x85
 #define REJ0 0x01

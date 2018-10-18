@@ -30,12 +30,16 @@ void data_writer(int argc, char * argv[]){
     fd=llopenW(1,2);
 
 
-    int file_name_size = strlen(argv[3]);
+    int file_name_size = strlen(pinguim);
     unsigned char * file_name = (unsigned char *)malloc(file_name_size);
-    file_name = (unsigned char *)argv[3];
-
+    file_name = (unsigned char *)pinguim;
+    int final_size=0;
+    unsigned char * pointerToPacket=makeControlPackage_I(PINGUIM_SIZE,file_name, file_name_size, &final_size, 0x02);
+    llwriteW(fd,pointerToPacket,final_size);
 }
-
+int llwriteW(int fd, unsigned char * startOfFile,int finalSize){
+  return 0;
+}
 
 int llopenW(int porta, int status){
     int res;

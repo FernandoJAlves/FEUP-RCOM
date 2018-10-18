@@ -15,8 +15,8 @@
 #define CTRL_C_START 0x02
 #define CTRL_C_END   0x03
 #define T1           0x00   //Tamanho do ficheiro
-#define T2           0x01   //Nome do ficheiro   
-#define L1           0x04   //4 - Tamanho de um long int 
+#define T2           0x01   //Nome do ficheiro
+#define L1           0x04   //4 - Tamanho de um long int
 
 
 
@@ -48,7 +48,7 @@ int llwrite(int fd, char * buffer, int length);
 unsigned char SET[5];
 unsigned char UA[5];
 int fd;
-
+int llwriteW(int fd, unsigned char * startOfFile,int finalSize);
 
 //      Application Layer Functions
 

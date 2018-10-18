@@ -29,9 +29,8 @@ o octeto 0x20)
 void data_reader(int argc, char * argv[]){
 
     int fd=llopenR(1,2);
-    unsigned int * size;
-    *size=1000;
-    unsigned char * finalPacket=llread(fd,size);
+    unsigned int size=1000;
+    unsigned char * finalPacket=llread(fd,&size);
     printf("size of file received in bytes: %lu",sizeof(finalPacket)/sizeof(finalPacket[0]));
 
 }
