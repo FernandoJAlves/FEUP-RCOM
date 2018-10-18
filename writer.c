@@ -101,23 +101,21 @@ void connect(){
 
 unsigned char * readFile(unsigned char * fileName, long int * fileSize){
 
-    FILE * f;
+    FILE * fd;
     struct stat data;
 
-    if((f = fopen(((const char *)fileName), "rb")) == NULL){
+    if((fd= fopen(((const char *)fileName), O_RDONLY)) == NULL){
         perror("Error while opening the file");
-        //return ?
+        return NULL;
     }
     stat((const char*)fileName, &data); //get the file metadata
 
     *fileSize = data.st_size;
 
-    printf("File size is %ld bytes\n", *fileSize);
-
     //TODO maybe replace by unsigned
     unsigned char * fileData = (unsigned char*)malloc(*fileSize);
 
-    //TODO Ler o ficheiro, talvez com fread?
+    fread(fileData,sizeof(unsigned char),*fileSize,fd);
 
     return fileData;
 
