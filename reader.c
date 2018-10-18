@@ -16,9 +16,14 @@ campo de controlo pode ser usado para desencadear uma acção adequada
 – Se se tratar duma nova trama, é conveniente fazer um pedido de retransmissão
 com REJ, o que permite antecipar a ocorrência de time-out no em
 
-Em particular, os mecanismos de numeração de tramas I e de pacotes de dados
-são totalmente independentes e nenhuma relação deve ser estabelecida entre eles
-Iframe
+e no interior da trama ocorrer o octeto 01111110 (0x7e), isto é, o padrão que
+corresponde a uma flag, o octeto é substituído pela sequência 0x7d 0x5e (octeto
+de escape seguido do resultado do ou exclusivo do octeto substituído com o octeto
+0x20)
+– Se no interior da trama ocorrer o octeto 01111101 (0x7d), isto é, o padrão que
+corresponde ao octeto de escape, o octeto é substituído pela sequência 0x7d 0x5d
+(octeto de escape seguido do resultado do ou exclusivo do octeto substituído com
+o octeto 0x20)
 
 */
 void data_reader(int argc, char * argv[]){
@@ -57,94 +62,98 @@ int llread(int fd, unsigned int  * size){
   unsigned char c;
   unsigned char *frame = (unsigned char *)malloc(0);
   int bccCheckedData;
-  while(sucess){
+  while(curr_state<=5){
     read(fd,&c,1);
       switch(curr_state){
-    case 0:
-      if(c == FLAG){
-        curr_state = 1;
-      }
-      break;
-    case 1:
-      if(c == FLAG){
-        curr_state = 1;
-      }
-      else if(c == Aemiss){
-        curr_state = 2;
-      }
-      else{
-        curr_state = 0;
-      }
-      break;
-    case 2:
-      if(c == C0){
-        controlField = c;
-        tramaNum = 0;
-        curr_state = 3;
-      }
-      else if(c == C1){
-        controlField = c;
-        tramaNum = 1;
-        curr_state = 3;
-      }
-      else{
-        if (c == FLAG)
-          curr_state = 1;
-        else
-          curr_state = 0;
-      }
-      break;
-    case 3:
-    if (c == (Aemiss ^ controlField))
-      curr_state = 4;
-    else
-      curr_state = 0;
-    break;
-    case 4:
-    if (c == FLAG)
-    {
-        if (checkBCC2(frame, *size)){
-          if (tramaNum == 0)
-            sendC(fd, RR0);
+        case 0:
+          if(c == FLAG){
+            curr_state = 1;
+          }
+          break;
+        case 1:
+          if(c == FLAG){
+            curr_state = 1;
+          }
+          else if(c == Aemiss){
+            curr_state = 2;
+          }    
+          else if(c == C1){
+            controlField = c;
+            tramaNum = 1;
+            curr_state = 3;
+          }
+          else{
+            if (c == FLAG)
+              curr_state = 1;
+            else
+              curr_state = 0;
+          }
+        break;
+        case 3:
+          if (c == (Aemiss ^ controlField))
+            curr_state = 4;
           else
-            sendC(fd, RR1);
+            curr_state = 0;
+        break;
+        case 4:
+          if (c == FLAG){
+              if (checkBCC2(frame, *size)){
+                if (tramaNum == 0)ESCAPE_FLAG
+                  sendC(fd, RR0);
+                else
+                  sendC(fd, RR1);
 
-          curr_state = 6;
-          bccCheckedData = 1;
-          printf("Enviou RR, T: %d\n", tramaNum);
-        }
-        else
-        {
-          if (tramaNum == 0)
-            sendC(fd, REJ0);
+                curr_state = 6;
+                bccCheckedData = 1ESCAPE_FLAG
+                printf("Enviou RR, T: %d\n", tramaNum);
+              }
+              else
+              {
+                if (tramaNum == 0)
+                  sendC(fd, REJ0);
+                else
+                  sendC(fd, REJ1);
+                curr_state = 6;
+                bccCheckedData = 0;
+                printf("Enviou REJ, T: %d\n", tramaNum);
+              }
+            }
+            else if (c == ESCAPE)
+            {
+
+              curr_state = 5;
+            }
+            else
+            {
+              (*size)++;
+              frame = (unsigned char *)realloc(frame, *size);
+              frame[*size - 1] = c;
+            }
+        break;
+        case 5:
+          //DOES BYTE DE-STUFFING OP
+          if (c == ESCAPE_FLAG1)
+          {
+            message = (unsigned char *)realloc(message, ++(*sizeMessage));
+            message[*sizeMessage - 1] = FLAG;
+            curr_state=4;
+          }
           else
-            sendC(fd, REJ1);
-          curr_state = 6;
-          bccCheckedData = 0;
-          printf("Enviou REJ, T: %d\n", tramaNum);
-        }
-      }
-      else if (c == ESCAPE_FLAG)
-      {
-        //Distuffing?
-        curr_state = 5;
-      }
-      else
-      {
-        (*size)++;
-        frame = (unsigned char *)realloc(frame, *size);
-        frame[*size - 1] = c;
-      }
-    break;
-    case 5:
-      if(c == FLAG){
-        return curr_state=5;
-      }
-      else{
-        curr_state = 0;
-      }
-      break;
-  }
+          {
+            if (c == ESCAPE_FLAG2)
+            {
+              message = (unsigned char *)realloc(message, ++(*sizeMessage));
+              message[*sizeMessage - 1] = ESCAPE;
+            }
+            else
+            {
+              perror("Non valid character after escape character");
+              exit(-1);
+            }
+          }
+          state = 4;
+        break;
+    }
   }
   return curr_state;
 }

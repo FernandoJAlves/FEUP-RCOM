@@ -15,7 +15,9 @@
 #define RR1 0x85
 #define REJ0 0x01
 #define REJ1 0x81
-#define ESCAPE_FLAG 0x7D
+#define ESCAPE_FLAG1 0x5E
+
+#define ESCAPE_FLAG2 0x5D
 
 
 
