@@ -27,10 +27,8 @@ void data_writer(int argc, char * argv[]){
 
     int fd;
 
-    if((fd=llopenW(1,2)) != 0){
-      printf("Error in llopen()!\n");
-      return;
-    }
+    fd=llopenW(1,2);
+
 
     int file_name_size = strlen(argv[3]);
     unsigned char * file_name = (unsigned char *)malloc(file_name_size);
@@ -127,7 +125,7 @@ unsigned char * makeControlPackage_I(long int fileSize, unsigned char * fileName
       printf("Invalid value in start_or_end!");
     }
     else{
-      finalPackage[0] = start_or_end; 
+      finalPackage[0] = start_or_end;
     }
 
 	return NULL;

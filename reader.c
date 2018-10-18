@@ -28,7 +28,11 @@ o octeto 0x20)
 */
 void data_reader(int argc, char * argv[]){
 
-    llopenR(1,2);
+    int fd=llopenR(1,2);
+    unsigned int * size;
+    *size=1000;
+    unsigned char * finalPacket=llread(fd,size);
+    printf("size of file received in bytes: %lu",sizeof(finalPacket)/sizeof(finalPacket[0]));
 
 }
 
@@ -53,7 +57,7 @@ int sendC(int fd, unsigned char controlField){
   controlPacket[4] = FLAG;
   int bytes=write(fd, controlPacket, 5);
   return bytes;
-  
+
 }
 
 unsigned char * llread(int fd, unsigned int  * size){
@@ -170,7 +174,7 @@ unsigned char * llread(int fd, unsigned int  * size){
   *size = *size - 1;
   if (bccCheckedData)
   {
-   
+
   }
 
 	return frame;
