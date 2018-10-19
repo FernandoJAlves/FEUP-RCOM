@@ -33,10 +33,10 @@ void data_writer(int argc, char * argv[]){
     int file_name_size = strlen(pinguim);
     unsigned char * file_name = (unsigned char *)malloc(file_name_size);
     file_name = (unsigned char *)pinguim;
-    int final_size=0;
-    unsigned char * read_file=readFile(file_name,(long int *) &final_size);
-    unsigned char * pointerToCtrlPacket=makeControlPackage_I(PINGUIM_SIZE,file_name, file_name_size,(int *) &final_size, 0x02);
-    printf("size of File %d  + %lu\n",final_size,sizeof(pointerToCtrlPacket));
+    off_t final_size;
+    unsigned char * read_file=readFile(file_name,&final_size);
+    //unsigned char * pointerToCtrlPacket=makeControlPackage_I(PINGUIM_SIZE,file_name, file_name_size,(int *) &final_size, 0x02);
+    printf("size of File %ld \n",final_size);
     llwriteW(fd,read_file,final_size);
 }
 int llwriteW(int fd, unsigned char * startOfFile,int finalSize){
@@ -99,20 +99,20 @@ void connect(){
 
 
 
-unsigned char * readFile(unsigned char * fileName, long int * fileSize){
+unsigned char * readFile(unsigned char * fileName, off_t * fileSize){
 
     FILE * fd;
     struct stat data;
 
-    if((fd= fopen(((const char *)fileName), O_RDONLY)) == NULL){
+    if((fd= fopen(((const char *)fileName), "rb")) == NULL){
         perror("Error while opening the file");
         return NULL;
     }
     stat((const char*)fileName, &data); //get the file metadata
 
-    *fileSize = data.st_size;
+    *fileSize = data.st_size; //gets file size in bytes
+    printf("size of File %ld\n",(*fileSize));
 
-    //TODO maybe replace by unsigned
     unsigned char * fileData = (unsigned char*)malloc(*fileSize);
 
     fread(fileData,sizeof(unsigned char),*fileSize,fd);
