@@ -54,7 +54,7 @@ int llwriteW(int fd, unsigned char * startOfFile,int finalSize);
 
 unsigned char * readFile(unsigned char * fileName, long int * fileSize);
 
-unsigned char * makeControlPackage_I(long int fileSize, unsigned char * fileName, int fileName_size, int * finalSize, unsigned char start_or_end);
+unsigned char * makeControlPacket(long int fileSize, unsigned char * fileName, int fileName_size, int * finalSize, unsigned char start_or_end);
 
 
 #endif

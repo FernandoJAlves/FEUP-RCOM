@@ -35,7 +35,7 @@ void data_writer(int argc, char * argv[]){
     file_name = (unsigned char *)pinguim;
     off_t final_size;
     unsigned char * read_file=readFile(file_name,&final_size);
-    //unsigned char * pointerToCtrlPacket=makeControlPackage_I(PINGUIM_SIZE,file_name, file_name_size,(int *) &final_size, 0x02);
+    //unsigned char * pointerToCtrlPacket=makeControlPackage_I(PINGUIM_SIZE,file_name, file_name_size,(int *) &final_size,CTRL_C_START);
     printf("size of File %ld \n",final_size);
     llwriteW(fd,read_file,final_size);
 }
@@ -125,9 +125,17 @@ unsigned char * readFile(unsigned char * fileName, off_t * fileSize){
 }
 
 unsigned char * makeControlPackage_I(long int fileSize, unsigned char * fileName, int fileName_size, int * finalSize, unsigned char start_or_end){
+  /*
 
-    *finalSize = fileName_size + 9 * sizeof(unsigned char);
+TLV (Type, Length, Value)
+– T (um octeto) – indica qual o parâmetro (0 – tamanho do ficheiro, 1 – nome do
+ficheiro, outros valores – a definir, se necessário)
+– L (um octeto) – indica o tamanho em octetos do campo V (valor do parâmetro)
+– V (número de octetos indicado em L) – valor do parâmetro
+  */
+    //*finalSize += fileName_size + 9 * sizeof(unsigned char);
     unsigned char * finalPackage = (unsigned char * )malloc(*finalSize);
+    
     if(start_or_end == CTRL_C_START){
       finalPackage[0]=start_or_end;
     }
@@ -135,8 +143,9 @@ unsigned char * makeControlPackage_I(long int fileSize, unsigned char * fileName
       finalPackage[0] = start_or_end;
     }
     else {printf("Invalid value in start_or_end!");return NULL;}
-    finalPackage[1]=T1;
-    finalPackage[2]=L1;
+    finalPackage[1]=T1; //Tamanho do ficheiro
+    finalPackage[2]=L1;  //4 - Tamanho de um long int
+    //finalPackage
     //finalPackage[3]=
     return NULL;
 
