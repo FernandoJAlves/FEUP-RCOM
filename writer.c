@@ -35,8 +35,8 @@ void data_writer(int argc, char * argv[]){
     file_name = (unsigned char *)pinguim;
     off_t final_size;
     unsigned char * read_file=readFile(file_name,&final_size);
-    //unsigned char * pointerToCtrlPacket=makeControlPackage_I(PINGUIM_SIZE,file_name, file_name_size,(int *) &final_size,CTRL_C_START);
-    printf("size of File %ld \n",final_size);
+    unsigned char * pointerToCtrlPacket=makeControlPackage_I(final_size,file_name, file_name_size,(int *) &final_size,CTRL_C_START);
+    printf("size of File %ld \n",sizeof(final_size));
     llwriteW(fd,read_file,final_size);
 }
 int llwriteW(int fd, unsigned char * startOfFile,int finalSize){
@@ -124,7 +124,7 @@ unsigned char * readFile(unsigned char * fileName, off_t * fileSize){
 
 }
 
-unsigned char * makeControlPackage_I(long int fileSize, unsigned char * fileName, int fileName_size, int * finalSize, unsigned char start_or_end){
+unsigned char * makeControlPackage_I(off_t fileSize, unsigned char * fileName, int fileName_size, int * finalSize, unsigned char start_or_end){
   /*
 
 TLV (Type, Length, Value)
@@ -133,9 +133,11 @@ ficheiro, outros valores – a definir, se necessário)
 – L (um octeto) – indica o tamanho em octetos do campo V (valor do parâmetro)
 – V (número de octetos indicado em L) – valor do parâmetro
   */
-    //*finalSize += fileName_size + 9 * sizeof(unsigned char);
-    unsigned char * finalPackage = (unsigned char * )malloc(*finalSize);
-    
+  
+  
+  	int start_packet_len = 5 + sizeof(fileSize) + fileName_size;
+  	char *finalPackage = ( char *)malloc(sizeof(char) * start_packet_len);
+
     if(start_or_end == CTRL_C_START){
       finalPackage[0]=start_or_end;
     }
@@ -144,9 +146,14 @@ ficheiro, outros valores – a definir, se necessário)
     }
     else {printf("Invalid value in start_or_end!");return NULL;}
     finalPackage[1]=T1; //Tamanho do ficheiro
-    finalPackage[2]=L1;  //4 - Tamanho de um long int
-    //finalPackage
-    //finalPackage[3]=
+    finalPackage[2]=sizeof(fileSize);  //8
+	*((off_t *)(finalPackage + 3)) = fileSize;
+  	finalPackage[3 + sizeof(fileSize)] = T2;  //Nome do ficheiro
+  	finalPackage[4 + sizeof(fileSize)] = fileName_size;
+	strcat(finalPackage + 5 + sizeof(fileSize),(char *)fileName);
+	printf("size of fileSize:%ld    size of finalPackage:%ld",fileSize,sizeof(finalPackage[4]));
+
+   // finalPackage[3]=
     return NULL;
 
 }
