@@ -111,12 +111,15 @@ unsigned char * readFile(unsigned char * fileName, off_t * fileSize){
     stat((const char*)fileName, &data); //get the file metadata
 
     *fileSize = data.st_size; //gets file size in bytes
-    printf("size of File %ld\n",(*fileSize));
+
 
     unsigned char * fileData = (unsigned char*)malloc(*fileSize);
 
     fread(fileData,sizeof(unsigned char),*fileSize,fd);
-
+    if(ferror(fd)){
+          perror("error writting to file\n");
+    }
+    fclose(fd);
     return fileData;
 
 }
