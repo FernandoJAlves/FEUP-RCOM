@@ -4,30 +4,20 @@
 
 int numAttempts=0;
 int isConnected=0;
-
+int openOrWrite=0;
 //handles the alarm signal
-void timeout(){
-
-  if((!isConnected) && (numAttempts < 4))
-  {
-    numAttempts++;
-    printf("Attempt number=%d\n", numAttempts);
-    connect();
-  }
-  else
-  {
-    printf("Operation failed!\n");
-    exit(-1);
-  }
-
-}
+int flag=0;
 
 //main function called after choosing sender/receiver
 
 int llwriteW(int fd, unsigned char * packetsFromCtrl,int sizeOfTrama){
+  /*
+  numAttempts=0;
+  isConnected=0;
+  openOrWrite=1;
   //unsigned char * BCC2s = (unsigned char *)malloc(sizeof(unsigned char));
-  unsigned char * finalMessage= (unsigned char *)malloc((sizeOfTrama+6) * sizeof(unsigned char));
-  int finalSize=sizeOfTrama+6;
+  finalMessage= (unsigned char *)malloc((sizeOfTrama+6) * sizeof(unsigned char));
+  finalSize=sizeOfTrama+6;
   finalMessage[0]=FLAG;
   finalMessage[1]=Aemiss;
   if(!packetsFromCtrl[0]){
@@ -65,8 +55,8 @@ int llwriteW(int fd, unsigned char * packetsFromCtrl,int sizeOfTrama){
   unsigned char BCC2=getBCC2(packetsFromCtrl,sizeOfTrama);
   BCC2Stuffed=stuffingBCC2(BCC2, &sizeBCC2);
   //if()
-    if (sizeBCC2 == 1)
-      finalMessage[j] = BCC2; //bcc ok
+  if (sizeBCC2 == 1)
+    finalMessage[j] = BCC2; //bcc ok
   else
   {
     finalMessage = (unsigned char *)realloc(finalMessage, ++finalSize);
@@ -74,9 +64,16 @@ int llwriteW(int fd, unsigned char * packetsFromCtrl,int sizeOfTrama){
     finalMessage[j + 1] = BCC2Stuffed[1]; //
     j++;
   }
-finalMessage[j + 1] = FLAG;
+  finalMessage[j + 1] = FLAG;
+  int curr_state=0;
+  while(1){
+    (void) signal(SIGALRM,timeout);
+    write(fd,finalMessage,finalSize);
+    alarm(3);
+    unsigned char C=readControlMessage(, int curr_state)
+  }
 
-
+*/
   return 0;
 }
 unsigned char getBCC2(unsigned char *mensagem, int size)
@@ -116,6 +113,7 @@ unsigned char *stuffingBCC2(unsigned char BCC2, int *sizeBCC2)
 
 
 int llopenW(int porta, int status){
+   
     int res;
     SET[0] = FLAG;
     SET[1] = Aemiss;
@@ -130,6 +128,7 @@ int llopenW(int porta, int status){
     UA[4] = FLAG;
     char buf[255];
     int curr_level=0;
+    (void) signal(SIGALRM,timeout);
 
     /*
       Open serial port device for reading and writing and not as controlling tty
@@ -142,9 +141,11 @@ int llopenW(int porta, int status){
       return -1;
     }
     if(!link_layer.status){//EMISSOR
-     (void) signal(SIGALRM,timeout);
-     res=write(fd,SET,5);
-     alarm(3);
+     if((!isConnected) && (numAttempts < 4)){
+      res=write(fd,SET,5);
+      alarm(3);
+      printf("Attempt number=%d\n", numAttempts);
+     }
      printf("Sent SET,waiting for receiver\n");
     //RECEIVE UA
      while (curr_level<5) {       /* loop for input */
@@ -161,9 +162,17 @@ int llopenW(int porta, int status){
     return fd;
   }
 
-void connect(){
+void callAlarm(){
+  if(!flag)
     write(fd,SET,5);
-    alarm(3);
+  else
+    write(fd,finalMessage,finalSize); // declared global variables malloc ca<refull
+  alarm(3);
+}
+void timeout(){
+    numAttempts++;
+    printf("Attempt number=%d\n", numAttempts);
+    callAlarm();
 }
 
 

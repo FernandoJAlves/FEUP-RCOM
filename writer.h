@@ -16,8 +16,8 @@
 #define CTRL_C_END   0x03
 
 
-
-
+void callAlarm();
+void timeout();
 //       Data Link Layer Functions
 
 int llopenW(int porta, int status); //TODO Tirar argumentos
@@ -40,7 +40,8 @@ int llwrite(int fd, char * buffer, int length);
 
 
 //Global variables
-
+int finalSize;
+unsigned char * finalMessage;
 unsigned char SET[5];
 unsigned char UA[5];
 int fd;
