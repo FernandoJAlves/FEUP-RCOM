@@ -26,6 +26,7 @@ corresponde ao octeto de escape, o octeto é substituído pela sequência 0x7d 0
 o octeto 0x20)
 
 */
+int expectedBCC=0;
 
 
 int checkBCC2(unsigned char *packet, int size)
@@ -81,12 +82,12 @@ unsigned char * llread(int fd, unsigned int  * size){
 		  }
 		break;
 		case 2:
-		  if(c == C0){
+		  if(c == nsC){
 		    controlField = c;
 		    tramaNum = 0;
 		    curr_state = 3;
 		  }
-		  else if(c == C1){
+		  else if(c == nsI){
 		    controlField = c;
 		    tramaNum = 1;
 		    curr_state = 3;
@@ -163,12 +164,18 @@ unsigned char * llread(int fd, unsigned int  * size){
   	}
   }
   frame = (unsigned char *)realloc(frame, *size - 1);
-
-  *size = *size - 1;
-  if (bccCheckedData)
-  {
-
-  }
+	*size = *size - 1;
+		if (bccCheckedData)
+		{
+			if (tramaNum == expectedBCC)
+			{
+				expectedBCC ^= 1;
+			}
+			else
+				*size = 0;
+		}
+		else
+			*size = 0;
 
 	return frame;
 }

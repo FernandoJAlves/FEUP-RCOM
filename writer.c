@@ -24,10 +24,96 @@ void timeout(){
 
 //main function called after choosing sender/receiver
 
-int llwriteW(int fd, unsigned char * startOfFile,int finalSize){
+int llwriteW(int fd, unsigned char * packetsFromCtrl,int sizeOfTrama){
   //unsigned char * BCC2s = (unsigned char *)malloc(sizeof(unsigned char));
+  unsigned char * finalMessage= (unsigned char *)malloc((sizeOfTrama+6) * sizeof(unsigned char));
+  int finalSize=sizeOfTrama+6;
+  finalMessage[0]=FLAG;
+  finalMessage[1]=Aemiss;
+  if(!packetsFromCtrl[0]){
+    finalMessage[2]=nsC;
+  }
+  else  finalMessage[2]=nsI;
+  finalMessage[3]=finalMessage[1]^finalMessage[2];
+
+  int numOfTramas;
+  int j=4;
+  for(numOfTramas=0;numOfTramas<sizeOfTrama;numOfTramas++){
+    //FLAG ou octedo 0x
+    unsigned char readByte=packetsFromCtrl[numOfTramas];
+    if(readByte==FLAG){ //stuffing
+      finalMessage = (unsigned char *)realloc(finalMessage, ++finalSize);
+      finalMessage[j]=ESCAPEBYTE;
+      finalMessage[j+1]=ESCAPE_FLAG1;
+      j+=2;
+    }
+    else{
+      if(readByte==ESCAPEBYTE){ //stuffing for escape
+        finalMessage = (unsigned char *)realloc(finalMessage, ++finalSize);
+        finalMessage[j]=ESCAPEBYTE;
+        finalMessage[j+1]=ESCAPE_FLAG2;
+        j+=2;
+      }
+      else{         // dados
+        finalMessage[j]=packetsFromCtrl[numOfTramas];
+        j++;
+      }
+    }
+  }
+  int sizeBCC2=1;
+  unsigned char *BCC2Stuffed=malloc(sizeof(unsigned char));
+  unsigned char BCC2=getBCC2(packetsFromCtrl,sizeOfTrama);
+  BCC2Stuffed=stuffingBCC2(BCC2, &sizeBCC2);
+  //if()
+    if (sizeBCC2 == 1)
+      finalMessage[j] = BCC2; //bcc ok
+  else
+  {
+    finalMessage = (unsigned char *)realloc(finalMessage, ++finalSize);
+    finalMessage[j] = BCC2Stuffed[0];
+    finalMessage[j + 1] = BCC2Stuffed[1]; //
+    j++;
+  }
+finalMessage[j + 1] = FLAG;
+
+
   return 0;
 }
+unsigned char getBCC2(unsigned char *mensagem, int size)
+{
+  unsigned char BCC2 = mensagem[0];
+  int i;
+  for (i = 1; i < size; i++)
+  {
+    BCC2 ^= mensagem[i];
+  }
+  return BCC2;
+}
+
+unsigned char *stuffingBCC2(unsigned char BCC2, int *sizeBCC2)
+{
+  unsigned char *BCC2Stuffed;
+  if (BCC2 == FLAG)
+  {
+    BCC2Stuffed = (unsigned char *)malloc(2 * sizeof(unsigned char *));
+    BCC2Stuffed[0] = ESCAPEBYTE;
+    BCC2Stuffed[1] = ESCAPE_FLAG1;
+    (*sizeBCC2)++;
+  }
+  else
+  {
+    if (BCC2 == ESCAPEBYTE)
+    {
+      BCC2Stuffed = (unsigned char *)malloc(2 * sizeof(unsigned char *));
+      BCC2Stuffed[0] = ESCAPEBYTE;
+      BCC2Stuffed[1] = ESCAPE_FLAG2;
+      (*sizeBCC2)++;
+    }
+  }
+
+  return BCC2Stuffed;
+}
+
 
 int llopenW(int porta, int status){
     int res;
