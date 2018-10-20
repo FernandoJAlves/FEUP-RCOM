@@ -105,12 +105,37 @@ void data_writer(int argc, char * argv[]){
 }
 
 void data_reader(int argc, char * argv[]){
-
+    int reading=1;
     int fd=llopenR(1,2);
     unsigned int size;
-    unsigned char * finalPacket=llread(fd,&size);
-    printf("\nsize of file received in bytes: %lu\n",sizeof(finalPacket)/sizeof(finalPacket[0]));
+    unsigned char * startPacket=llread(fd,&size);
+    unsigned char * dataPacket;
+    unsigned int sizeEnd;
+    while(reading){
+       dataPacket=llread(fd,&size);
+       if(isEndMessage(startPacket,size,dataPacket,size)){
+         printf("\nCHEGOU\n");
+         reading=0;
+       }
+    }
+    //printf("\nsize of file received in bytes: %x\n",*finalPacket);
 
+}
+
+int isEndMessage(unsigned char *start, int sizeStart, unsigned char *end, int sizeEnd)
+{
+  int s = 1;
+  int e = 1;
+
+  if (end[0] == CTRL_C_END)
+  {
+    return 1;
+  }
+  else
+  {
+    return 0;
+  }
+  
 }
 
 

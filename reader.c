@@ -64,6 +64,7 @@ unsigned char * llread(int fd, unsigned int  * size){
   int bccCheckedData;
   while(!sucess){
 	read(fd,&c,1);
+//	printf("\n%x",c);
       switch(curr_state){
 		case 0:
 		  if(c == FLAG){
@@ -159,7 +160,7 @@ unsigned char * llread(int fd, unsigned int  * size){
 		  curr_state = 4;
 	  	break;
 		case 6:
-			printf("chegou\n");
+
 			sucess=1;
 		break;
   	}
