@@ -17,12 +17,6 @@ void data_reader(int argc, char * argv[]);
 //       Data Link Layer Functions
 
 int llopenR(int porta, int status);
-// argumentos
-// –porta: COM1, COM2, ...
-// –flag: TRANSMITTER / RECEIVER
-// retorno
-// –identificador da ligação de dados
-// –valor negativo em caso de erro
 
 unsigned char * llread(int fd, unsigned int  * size);
 
