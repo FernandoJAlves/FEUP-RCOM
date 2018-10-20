@@ -62,7 +62,7 @@ unsigned char * llread(int fd, unsigned int  * size){
   unsigned char c;
   unsigned char *frame = (unsigned char *)malloc(0);
   int bccCheckedData;
-  while(sucess){
+  while(!sucess){
 	read(fd,&c,1);
       switch(curr_state){
 		case 0:
@@ -159,6 +159,7 @@ unsigned char * llread(int fd, unsigned int  * size){
 		  curr_state = 4;
 	  	break;
 		case 6:
+			printf("chegou\n");
 			sucess=1;
 		break;
   	}
