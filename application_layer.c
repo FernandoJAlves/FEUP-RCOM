@@ -8,7 +8,7 @@
 #include "writer.h"
 #include "reader.h"
 
-
+unsigned int writer_msg_count = 0;
 
 
 int main(int argc, char** argv){
@@ -98,7 +98,7 @@ ficheiro, outros valores – a definir, se necessário)
     else {printf("Invalid value in start_or_end!");return NULL;}
     finalPackage[1]=T1; //Tamanho do ficheiro
     finalPackage[2]=sizeof(fileSize);  //8
-	*((off_t *)(finalPackage + 3)) = fileSize;
+	  *((off_t *)(finalPackage + 3)) = fileSize;
   	finalPackage[3 + sizeof(fileSize)] = T2;  //Nome do ficheiro
   	finalPackage[4 + sizeof(fileSize)] = fileName_size;
 	strcat(finalPackage + 5 + sizeof(fileSize),(char *)fileName);
@@ -124,7 +124,6 @@ unsigned char * readFile(unsigned char * fileName, off_t * fileSize){
 
     *fileSize = data.st_size; //gets file size in bytes
 
-
     unsigned char * fileData = (unsigned char*)malloc(*fileSize);
 
     fread(fileData,sizeof(unsigned char),*fileSize,fd);
@@ -135,3 +134,39 @@ unsigned char * readFile(unsigned char * fileName, off_t * fileSize){
     return fileData;
 
 }
+
+unsigned char * makePacketHeader(unsigned char * fileFragment, long int fileSize, int * sizeOfFragment){
+
+  unsigned char * dataPacket = (unsigned char *)malloc(fileSize + 4);
+
+  dataPacket[0] = PACKET_H_C;
+  dataPacket[1] = writer_msg_count % 255;
+  dataPacket[2] = (int)fileSize / 256;
+  dataPacket[3] = (int)fileSize % 256;
+  memcpy(dataPacket+4, fileFragment, *sizeOfFragment);
+  *sizeOfFragment += 4;
+  writer_msg_count++;
+  //TODO ?
+  return dataPacket;
+
+}
+
+unsigned char * splitFile(unsigned char * file, long int * curr_index, int * packetSize, long int fileSize){
+  unsigned char * packet;
+  
+  if(*curr_index + *packetSize > fileSize){
+    *packetSize = fileSize - *curr_index; //Returns the number of bytes not sent yet
+  }
+  packet = (unsigned char *)malloc(*packetSize);
+  
+  int i = 0;
+  int j = *curr_index;
+  while(i < *packetSize){
+    packet[i] = file[j];
+    i++;
+    j++;
+  }
+  *curr_index = j;
+  return packet;
+}
+
