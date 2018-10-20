@@ -143,7 +143,7 @@ unsigned char * makePacketHeader(unsigned char * fileFragment, long int fileSize
   dataPacket[1] = writer_msg_count % 255;
   dataPacket[2] = (int)fileSize / 256;
   dataPacket[3] = (int)fileSize % 256;
-  mem_cpy(dataPacket+4, fileFragment, *sizeOfFragment);
+  memcpy(dataPacket+4, fileFragment, *sizeOfFragment);
   *sizeOfFragment += 4;
   writer_msg_count++;
   //TODO ?
