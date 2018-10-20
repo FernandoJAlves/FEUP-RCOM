@@ -8,9 +8,19 @@ int status; /*TRANSMITTER | RECEIVER*/
 
 applicationLayer app_layer;
 
+#define PACKET_H_C   1  //Value of packet header Control
+
+//  WRITER FUNCTIONS
+
 unsigned char * makeControlPackage_I(off_t fileSize, unsigned char * fileName, int fileName_size, int * finalSize, unsigned char start_or_end);
 unsigned char * readFile(unsigned char * fileName, long int * fileSize);
 void data_writer(int argc, char * argv[]);
+
+unsigned char * makePacketHeader(unsigned char * fileFragment, long int fileSize, int * sizeOfFragment);
+unsigned char * splitFile(unsigned char * file, long int * curr_index, int * packetSize, long int fileSize);
+
+//  READER FUNCTIONS
+
 void data_reader(int argc, char * argv[]);
 
 #endif
