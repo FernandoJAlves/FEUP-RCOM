@@ -12,7 +12,7 @@
 #include <string.h>
 #include <signal.h>
 
-void data_reader(int argc, char * argv[]);
+
 
 //       Data Link Layer Functions
 

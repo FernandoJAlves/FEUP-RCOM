@@ -20,8 +20,6 @@
 
 
 
-void data_writer(int argc, char * argv[]);
-
 //       Data Link Layer Functions
 
 int llopenW(int porta, int status); //TODO Tirar argumentos
@@ -52,9 +50,7 @@ int llwriteW(int fd, unsigned char * startOfFile,int finalSize);
 
 //      Application Layer Functions
 
-unsigned char * readFile(unsigned char * fileName, long int * fileSize);
 
-unsigned char * makeControlPackage_I(off_t fileSize, unsigned char * fileName, int fileName_size, int * finalSize, unsigned char start_or_end);
 
 
 #endif

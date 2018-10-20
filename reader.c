@@ -26,14 +26,7 @@ corresponde ao octeto de escape, o octeto é substituído pela sequência 0x7d 0
 o octeto 0x20)
 
 */
-void data_reader(int argc, char * argv[]){
 
-    int fd=llopenR(1,2);
-    unsigned int size;
-    unsigned char * finalPacket=llread(fd,&size);
-    printf("\nsize of file received in bytes: %lu\n",sizeof(finalPacket)/sizeof(finalPacket[0]));
-
-}
 
 int checkBCC2(unsigned char *packet, int size)
 {
