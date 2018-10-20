@@ -15,6 +15,7 @@
 #define RR1 0x85
 #define REJ0 0x01
 #define REJ1 0x81
+#define DISC 0x07
 #define ESCAPE_FLAG1 0x5E
 
 #define T1           0x00   //Tamanho do ficheiro
