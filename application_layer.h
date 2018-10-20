@@ -13,7 +13,7 @@ applicationLayer app_layer;
 
 //  WRITER FUNCTIONS
 
-unsigned char * makeControlPackage_I(off_t fileSize, unsigned char * fileName, int fileName_size, int * finalSize, unsigned char start_or_end);
+unsigned char * makeControlPackage_I(off_t fileSize, unsigned char * fileName, long int fileName_size, int * finalSize, unsigned char start_or_end);
 unsigned char * readFile(unsigned char * fileName, long int * fileSize);
 void data_writer(int argc, char * argv[]);
 

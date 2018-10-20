@@ -27,6 +27,8 @@ int llwriteW(int fd, unsigned char * packetsFromCtrl,int sizeOfTrama){
   }
   else  finalMessage[2]=nsI;
   finalMessage[3]=finalMessage[1]^finalMessage[2];
+  
+  printf("Passou 1\n");
 
   int numOfTramas;
   int j=4;
@@ -52,8 +54,11 @@ int llwriteW(int fd, unsigned char * packetsFromCtrl,int sizeOfTrama){
       }
     }
   }
+
+  printf("Passou 2\n");
+
   int sizeBCC2=1;
-  unsigned char *BCC2Stuffed=malloc(sizeof(unsigned char));
+  unsigned char *BCC2Stuffed=(unsigned char*)malloc(sizeof(unsigned char));
   unsigned char BCC2=getBCC2(packetsFromCtrl,sizeOfTrama);
   BCC2Stuffed=stuffingBCC2(BCC2, &sizeBCC2);
   //if()
@@ -68,6 +73,9 @@ int llwriteW(int fd, unsigned char * packetsFromCtrl,int sizeOfTrama){
   }
   finalMessage[j + 1] = FLAG;
   int curr_state=0;
+
+  printf("Passou 3\n");
+
   while((!isConnected) && (numAttempts < 4)){
     write(fd,finalMessage,finalSize);
     alarm(3);
