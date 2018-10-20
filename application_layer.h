@@ -8,7 +8,8 @@ int status; /*TRANSMITTER | RECEIVER*/
 
 applicationLayer app_layer;
 
-#define PACKET_H_C   1  //Value of packet header Control
+#define PACKET_H_C      1       //Value of packet header Control
+#define PACKET_SIZE     128     //Size you send each iteration
 
 //  WRITER FUNCTIONS
 

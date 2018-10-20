@@ -12,6 +12,8 @@ unsigned int writer_msg_count = 0;
 
 
 int main(int argc, char** argv){
+    //printf("Size: %d",sizeof(off_t));    TODO - MAYBE CHANGE LONG INT TO OFF_T
+    
     if ( (argc < 3) ||
         ((strcmp("1", argv[1])!=0) && (strcmp("2", argv[1])!=0)) ||
         ((strcmp("S", argv[2]) !=0) &&  (strcmp("R", argv[2]) !=0))) {
@@ -54,15 +56,45 @@ void data_writer(int argc, char * argv[]){
 
     fd=llopenW(1,2);
 
-
+// TODO - Tirar hardcoded
     int file_name_size = strlen(pinguim);
     unsigned char * file_name = (unsigned char *)malloc(file_name_size);
     file_name = (unsigned char *)pinguim;
-    off_t final_size;
-    unsigned char * read_file=readFile(file_name,&final_size);
-    unsigned char * pointerToCtrlPacket=makeControlPackage_I(final_size,file_name, file_name_size,(int *) &final_size,CTRL_C_START); 
-    printf("size of File %ld  controlPackageadress %x \n",sizeof(final_size),pointerToCtrlPacket);
-    llwriteW(fd,read_file,final_size);
+
+
+    off_t fileSize, controlPacketSize;
+    unsigned char * file = readFile(file_name,&fileSize);
+    unsigned char * pointerToCtrlPacket=makeControlPackage_I(fileSize,file_name, file_name_size,(int *) &controlPacketSize,CTRL_C_START); 
+    
+    //printf("size of File %ld  controlPackageadress %x \n",sizeof(final_size),pointerToCtrlPacket);
+    llwriteW(fd, pointerToCtrlPacket, controlPacketSize);
+    printf("Control Packet START sent\n");
+
+    int packetSize = PACKET_SIZE;
+    long int curr_index = 0;
+
+
+    while(curr_index < fileSize && packetSize == PACKET_SIZE){
+      
+      //get a piece of the file, then add the header, then send
+      unsigned char * packet = splitFile(file, &curr_index, &packetSize, fileSize);
+      
+      int packetHeaderSize = packetSize;
+      unsigned char * packet_and_header = makePacketHeader(packet, fileSize, &packetHeaderSize);
+
+      //TODO - Testar se o llwriteW falhou
+      llwriteW(fd, packet_and_header, packetHeaderSize);
+
+
+      printf("Packet enviado: %d\n", writer_msg_count);
+    }
+
+    unsigned char * pointerToCtrlPacketEnd=makeControlPackage_I(fileSize,file_name, file_name_size,(int *) &controlPacketSize,CTRL_C_END); 
+    llwriteW(fd, pointerToCtrlPacketEnd, controlPacketSize);
+    printf("Control Packet END sent\n");
+
+    //llclose
+    
 }
 
 void data_reader(int argc, char * argv[]){
@@ -87,7 +119,7 @@ ficheiro, outros valores – a definir, se necessário)
   
   
   	int start_packet_len = 5 + sizeof(fileSize) + fileName_size;
-  	char *finalPackage = ( char *)malloc(sizeof(char) * start_packet_len);
+  	unsigned char *finalPackage = (unsigned char *)malloc(sizeof(unsigned char) * start_packet_len);
 
     if(start_or_end == CTRL_C_START){
       finalPackage[0]=start_or_end;
@@ -101,7 +133,7 @@ ficheiro, outros valores – a definir, se necessário)
 	  *((off_t *)(finalPackage + 3)) = fileSize;
   	finalPackage[3 + sizeof(fileSize)] = T2;  //Nome do ficheiro
   	finalPackage[4 + sizeof(fileSize)] = fileName_size;
-	strcat(finalPackage + 5 + sizeof(fileSize),(char *)fileName);
+	strcat((char*)finalPackage + 5 + sizeof(fileSize),(char*)fileName);
 	//printf("size of fileSize:%ld    size of finalPackage:%x",fileSize,sizeof(finalPackage[4]));
 
    // finalPackage[3]=
