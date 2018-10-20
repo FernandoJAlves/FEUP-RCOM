@@ -29,7 +29,7 @@ o octeto 0x20)
 void data_reader(int argc, char * argv[]){
 
     int fd=llopenR(1,2);
-    unsigned int size=1000;
+    unsigned int size;
     unsigned char * finalPacket=llread(fd,&size);
     printf("\nsize of file received in bytes: %lu\n",sizeof(finalPacket)/sizeof(finalPacket[0]));
 
@@ -37,8 +37,9 @@ void data_reader(int argc, char * argv[]){
 
 int checkBCC2(unsigned char *packet, int size)
 {
+int i;
   unsigned char byte = packet[0];
-  for (int i = 1; i < size - 1; i++){
+  for (i = 1; i < size - 1; i++){
       byte = byte^packet[i];
   }
   if (byte == packet[size - 1]){

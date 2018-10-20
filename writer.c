@@ -35,8 +35,8 @@ void data_writer(int argc, char * argv[]){
     file_name = (unsigned char *)pinguim;
     off_t final_size;
     unsigned char * read_file=readFile(file_name,&final_size);
-    unsigned char * pointerToCtrlPacket=makeControlPackage_I(final_size,file_name, file_name_size,(int *) &final_size,CTRL_C_START);
-    printf("size of File %ld \n",sizeof(final_size));
+    unsigned char * pointerToCtrlPacket=makeControlPackage_I(final_size,file_name, file_name_size,(int *) &final_size,CTRL_C_START); 
+    printf("size of File %ld  controlPackageadress %x \n",sizeof(final_size),pointerToCtrlPacket);
     llwriteW(fd,read_file,final_size);
 }
 int llwriteW(int fd, unsigned char * startOfFile,int finalSize){
