@@ -42,16 +42,18 @@ unsigned char * llread(int fd, unsigned int  * size){
   unsigned char c;
   unsigned char *frame = (unsigned char *)malloc(0);
   int bccCheckedData;
-  while(!sucess){
+  while(curr_state<5){
 	read(fd,&c,1);
 	//printf("\n na stateMachine: %x",c);
       switch(curr_state){
 		case 0:
+	//	printf("STUCK 0 : %x\n",c);
 		  if(c == FLAG){
 		    curr_state = 1;
 		  }
 		break;
 		case 1:
+	//	printf("STUCK  1 : %x\n",c);
 		  if(c == FLAG){
 		    curr_state = 1;
 		  }
@@ -63,6 +65,7 @@ unsigned char * llread(int fd, unsigned int  * size){
 		  }
 		break;
 		case 2:
+	//	printf("STUCK  2 : %x\n",c);
 		  if(c == nsC){
 		    controlField = c;
 		    tramaNum = 0;
@@ -81,6 +84,7 @@ unsigned char * llread(int fd, unsigned int  * size){
 		  }
 	    break;
 		case 3:
+		//printf("STUCK  3 : %x\n",c);
 		if (c == (Aemiss ^ controlField))
 		  curr_state = 4;
 		else
@@ -139,10 +143,6 @@ unsigned char * llread(int fd, unsigned int  * size){
 		  }
 		  curr_state = 4;
 	  	break;
-		case 6:
-
-			sucess=1;
-		break;
   	}
   }
   frame = (unsigned char *)realloc(frame, *size - 1);

@@ -98,7 +98,7 @@ void data_writer(int argc, char * argv[]){
 
     unsigned char * pointerToCtrlPacketEnd=makeControlPackage_I(fileSize,file_name, file_name_size,(int *) &controlPacketSize,CTRL_C_END); 
     llwriteW(fd, pointerToCtrlPacketEnd, controlPacketSize);
-    printf("Control Packet END sent\n");
+    printf("Control Packet END sent\n %x",pointerToCtrlPacket[0]);
 
     //llclose
     
@@ -109,14 +109,20 @@ void data_reader(int argc, char * argv[]){
     int fd=llopenR(1,2);
     unsigned int size;
     unsigned char * startPacket=llread(fd,&size);
-    printPointerValue(startPacket);
+    //printPointerValue(startPacket);
     unsigned char * dataPacket;
     unsigned int sizeEnd;
     while(reading){
-       dataPacket=llread(fd,&size);
+       dataPacket=llread(fd,&sizeEnd);
        // printf("start Packet: %x \n",dataPacket);
-       if(isEndMessage(startPacket,size,dataPacket,size)){
-         printf("\nCHEGOU\n");
+        /*printf("\nCHEGOU END : %x\n",dataPacket[0]);
+       printf("CHEGOU \n");*/
+       if(dataPacket[0]==CTRL_C_END){
+         printf("CHEGOU %x",dataPacket[0]);
+         break;
+       }
+       if(receivedEND(startPacket,size,dataPacket,sizeEnd)){
+         printf("\nCHEGOU END : %x\n",dataPacket[0]);
          reading=0;
        }
     }
@@ -133,20 +139,28 @@ void  printPointerValue(unsigned char * array){
   
 }
 
-int isEndMessage(unsigned char *start, int sizeStart, unsigned char *end, int sizeEnd)
+int receivedEND(unsigned char *start, int sizeStart, unsigned char *end, int sizeEnd)
 {
   int s = 1;
   int e = 1;
-
-  if (end[0] == CTRL_C_END)
-  {
-    return 1;
-  }
+  if (sizeStart != sizeEnd)
+    return 0;
   else
   {
-    return 0;
+    if (end[0] == CTRL_C_END)
+    {
+      for (; s < sizeStart; s++, e++)
+      {
+        if (start[s] != end[e])
+          return 0;
+      }
+      return 1;
+    }
+    else
+    {
+      return 0;
+    }
   }
-  
 }
 
 
