@@ -19,7 +19,7 @@ void data_writer(int argc, char * argv[]);
 
 unsigned char * makePacketHeader(unsigned char * fileFragment, long int fileSize, int * sizeOfFragment);
 unsigned char * splitFile(unsigned char * file, long int * curr_index, int * packetSize, long int fileSize);
-
+void createFile(unsigned char *mensagem, off_t *sizeFile, unsigned char filename[]);
 //  READER FUNCTIONS
 
 void data_reader(int argc, char * argv[]);

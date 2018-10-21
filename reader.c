@@ -66,6 +66,7 @@ unsigned char * llread(int fd, unsigned int  * size){
 		break;
 		case 2:
 	//	printf("STUCK  2 : %x\n",c);
+		//	printf("current size  state 2 : %lu\n", size);
 		  if(c == nsC){
 		    controlField = c;
 		    tramaNum = 0;
@@ -84,7 +85,6 @@ unsigned char * llread(int fd, unsigned int  * size){
 		  }
 	    break;
 		case 3:
-		//printf("STUCK  3 : %x\n",c);
 		if (c == (Aemiss ^ controlField))
 		  curr_state = 4;
 		else
@@ -116,8 +116,7 @@ unsigned char * llread(int fd, unsigned int  * size){
 		    curr_state = 5;
 		  }
 		  else{ //reads data
-		    (*size)++;
-		    frame = (unsigned char *)realloc(frame, *size);
+		    frame = (unsigned char *)realloc(frame, ++(*size));
 		    frame[*size - 1] = c;
 		  }
 		break;
@@ -145,9 +144,11 @@ unsigned char * llread(int fd, unsigned int  * size){
 	  	break;
   	}
   }
-  frame = (unsigned char *)realloc(frame, *size - 1);
+  frame = (unsigned char *)realloc(frame, *size);
+
 	*size = *size - 1;
-		if (bccCheckedData)
+
+		if (!bccCheckedData)
 		{
 			if (tramaNum == expectedBCC)
 			{
@@ -156,9 +157,8 @@ unsigned char * llread(int fd, unsigned int  * size){
 			else
 				*size = 0;
 		}
-		else
-			*size = 0;
-
+		else *size=0;
+	//printf("current size : %lu\n", size);
 	return frame;
 }
 

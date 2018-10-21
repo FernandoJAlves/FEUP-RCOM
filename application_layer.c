@@ -107,36 +107,39 @@ void data_writer(int argc, char * argv[]){
 void data_reader(int argc, char * argv[]){
     int reading=1;
     int fd=llopenR(1,2);
-    unsigned int size;
+    int size=0;
     unsigned char * startPacket=llread(fd,&size);
+    
     //printPointerValue(startPacket);
     unsigned char * dataPacket;
-    unsigned int sizeEnd;
+    unsigned char * finalFile;
+    off_t index=0;
     while(reading){
-       dataPacket=llread(fd,&sizeEnd);
-       // printf("start Packet: %x \n",dataPacket);
-        /*printf("\nCHEGOU END : %x\n",dataPacket[0]);
-       printf("CHEGOU \n");*/
-       if(dataPacket[0]==CTRL_C_END){
+        //printf("size of file : %lu \n",sizeEnd);
+        dataPacket=llread(fd,&size);
+        //printf("chegou %lu",sizeEnd);
+        printf("\nsize of file received in bytes: %lu\n",size);
+        if(dataPacket[0]==CTRL_C_END){
          printf("CHEGOU %x",dataPacket[0]);
          break;
-       }
-       if(receivedEND(startPacket,size,dataPacket,sizeEnd)){
-         printf("\nCHEGOU END : %x\n",dataPacket[0]);
-         reading=0;
-       }
+        }
+       //remove headers
+      //0 memcpy(finalFile+index,dataPacket,size);
+       //index+=size;
     }
-    //printf("\nsize of file received in bytes: %x\n",*finalPacket);
-
+    printf("value of size:  %lu" ,index);
+    createFile(finalFile,&index, "output.gif");
 }
-void  printPointerValue(unsigned char * array){
-   printf("startPacket:");
-  unsigned char **d;
-  while(*d){
-    printf("%x",*d);
-    d++;
-  }
-  
+
+
+
+void createFile(unsigned char *mensagem, off_t *sizeFile, unsigned char filename[])
+{
+  FILE *file = fopen((char *)filename, "wb+");
+  fwrite((void *)mensagem, 1, *sizeFile, file);
+  printf("%zd\n", *sizeFile);
+  printf("New file created\n");
+  fclose(file);
 }
 
 int receivedEND(unsigned char *start, int sizeStart, unsigned char *end, int sizeEnd)
