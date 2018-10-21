@@ -109,17 +109,25 @@ void data_reader(int argc, char * argv[]){
     int fd=llopenR(1,2);
     unsigned int size;
     unsigned char * startPacket=llread(fd,&size);
+    printPointerValue(startPacket);
     unsigned char * dataPacket;
     unsigned int sizeEnd;
     while(reading){
        dataPacket=llread(fd,&size);
-       if(isEndMessage(startPacket,size,dataPacket,size)){
+       // printf("start Packet: %x \n",dataPacket);
+       /*if(isEndMessage(startPacket,size,dataPacket,size)){
          printf("\nCHEGOU\n");
          reading=0;
-       }
+       }*/
     }
     //printf("\nsize of file received in bytes: %x\n",*finalPacket);
 
+}
+void  printPointerValue(unsigned char * array){
+   printf("startPacket:");
+  for(const char **iter = array; *iter; iter++){
+    printf("%x",*iter);
+  }
 }
 
 int isEndMessage(unsigned char *start, int sizeStart, unsigned char *end, int sizeEnd)

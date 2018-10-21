@@ -4,26 +4,6 @@
 
 
 /*
-Tramas I recebidas sem erros detectados no cabeçalho e no campo de dados
-são aceites para processamento
-– Se se tratar duma nova trama, o campo de dados é aceite (e passado à Aplicação),
-e a trama deve ser confirmada com RR
-– Se se tratar dum duplicado, o campo de dados é descartado, mas deve fazer-se
-confirmação da trama com RR
-» Tramas I sem erro detectado no cabeçalho mas com erro detectado (pelo
-respectivo BCC) no campo de dados – o campo de dados é descartado, mas o
-campo de controlo pode ser usado para desencadear uma acção adequada
-– Se se tratar duma nova trama, é conveniente fazer um pedido de retransmissão
-com REJ, o que permite antecipar a ocorrência de time-out no em
-
-e no interior da trama ocorrer o octeto 01111110 (0x7e), isto é, o padrão que
-corresponde a uma flag, o octeto é substituído pela sequência 0x7d 0x5e (octeto
-de escape seguido do resultado do ou exclusivo do octeto substituído com o octeto
-0x20)
-– Se no interior da trama ocorrer o octeto 01111101 (0x7d), isto é, o padrão que
-corresponde ao octeto de escape, o octeto é substituído pela sequência 0x7d 0x5d
-(octeto de escape seguido do resultado do ou exclusivo do octeto substituído com
-o octeto 0x20)
 
 */
 int expectedBCC=0;
@@ -64,7 +44,7 @@ unsigned char * llread(int fd, unsigned int  * size){
   int bccCheckedData;
   while(!sucess){
 	read(fd,&c,1);
-//	printf("\n%x",c);
+	//printf("\n na stateMachine: %x",c);
       switch(curr_state){
 		case 0:
 		  if(c == FLAG){
@@ -116,7 +96,7 @@ unsigned char * llread(int fd, unsigned int  * size){
 
 				  curr_state = 6;
 				  bccCheckedData = 1;
-				  printf("Enviou RR, T: %d\n", tramaNum);
+				 // printf("Enviou RR, T: %d\n", tramaNum);
 				}
 				else{
 				  if (tramaNum == 0)
@@ -125,7 +105,7 @@ unsigned char * llread(int fd, unsigned int  * size){
 				    sendC(fd, REJ1);
 				  curr_state = 6;
 				  bccCheckedData = 0;
-				  printf("Enviou REJ, T: %d\n", tramaNum);
+				//  printf("Enviou REJ, T: %d\n", tramaNum);
 				}
 		  }
 		  else if (c == ESCAPEBYTE){ //goes to state 5 for byte de-stuffing
