@@ -137,16 +137,15 @@ int isEndMessage(unsigned char *start, int sizeStart, unsigned char *end, int si
 {
   int s = 1;
   int e = 1;
-  printf("\n%x\n",end[0]);
-    if (end[0] == CTRL_C_END)
-    {
-       //printf("\n%x\n",end[0]);
-      return 1;
-    }
-    else
-    {
-      return 0;
-    }
+
+  if (end[0] == CTRL_C_END)
+  {
+    return 1;
+  }
+  else
+  {
+    return 0;
+  }
   
 }
 

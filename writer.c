@@ -56,7 +56,7 @@ int llwriteW(int fd, unsigned char * packetsFromCtrl,int sizeOfTrama){
   }
 
   printf("Passou 2\n");
-// TODO:: NOT RECEIVING END
+
   int sizeBCC2=1;
   unsigned char *BCC2Stuffed=(unsigned char*)malloc(sizeof(unsigned char));
   unsigned char BCC2=getBCC2(packetsFromCtrl,sizeOfTrama);
