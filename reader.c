@@ -34,9 +34,8 @@ int sendC(int fd, unsigned char controlField){
 
 }
 
-unsigned char * llread(int fd, unsigned int  * size){
+unsigned char * llread(int fd, unsigned long  * size){
   int curr_state = 0;
-  int sucess = 0;
   int tramaNum = 0;
   unsigned char controlField;
   unsigned char c;

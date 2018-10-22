@@ -65,12 +65,13 @@ void data_writer(int argc, char * argv[]){
     file_name = (unsigned char *)pinguim;
 
 
-    off_t fileSize, controlPacketSize = 0;
+    off_t fileSize;
+    long int controlPacketSize = 0;
     unsigned char * file = readFile(file_name,&fileSize);
     printf("fileSize: %ld\n", fileSize);
     unsigned char * pointerToCtrlPacket=makeControlPackage_I(fileSize,file_name, file_name_size, &controlPacketSize,CTRL_C_START); 
 
-    printf("packet: %x\n", pointerToCtrlPacket);
+    printf("packet: %x\n", (unsigned int)(*pointerToCtrlPacket));
     printf("size: %ld\n", controlPacketSize);
 
     //printf("size of File %ld  controlPackageadress %x \n",sizeof(final_size),pointerToCtrlPacket);
@@ -96,7 +97,7 @@ void data_writer(int argc, char * argv[]){
       printf("Packet enviado: %d\n", writer_msg_count);
     }
 
-    unsigned char * pointerToCtrlPacketEnd=makeControlPackage_I(fileSize,file_name, file_name_size,(int *) &controlPacketSize,CTRL_C_END); 
+    unsigned char * pointerToCtrlPacketEnd=makeControlPackage_I(fileSize,file_name, file_name_size,&controlPacketSize,CTRL_C_END); 
     llwriteW(fd, pointerToCtrlPacketEnd, controlPacketSize);
     printf("Control Packet END sent\n %x",pointerToCtrlPacket[0]);
 
@@ -107,12 +108,12 @@ void data_writer(int argc, char * argv[]){
 void data_reader(int argc, char * argv[]){
     int reading=1;
     int fd=llopenR(1,2);
-    int size=0;
+    unsigned long size=0;
     unsigned char * startPacket=llread(fd,&size);
     
-    //printPointerValue(startPacket);
+    printf("Start packet: %x",*startPacket);
     unsigned char * dataPacket;
-    unsigned char * finalFile;
+    unsigned char * finalFile = NULL;
     off_t index=0;
     while(reading){
         //printf("size of file : %lu \n",sizeEnd);
@@ -133,9 +134,9 @@ void data_reader(int argc, char * argv[]){
 
 
 
-void createFile(unsigned char *mensagem, off_t *sizeFile, unsigned char filename[])
+void createFile(unsigned char *mensagem, off_t *sizeFile, char * filename)
 {
-  FILE *file = fopen((char *)filename, "wb+");
+  FILE *file = fopen(filename, "wb+");
   fwrite((void *)mensagem, 1, *sizeFile, file);
   printf("%zd\n", *sizeFile);
   printf("New file created\n");
@@ -167,7 +168,7 @@ int receivedEND(unsigned char *start, int sizeStart, unsigned char *end, int siz
 }
 
 
-unsigned char * makeControlPackage_I(off_t fileSize, unsigned char * fileName, long int fileName_size, int * finalSize, unsigned char start_or_end){
+unsigned char * makeControlPackage_I(off_t fileSize, unsigned char * fileName, long int fileName_size, long int * finalSize, unsigned char start_or_end){
   /*
 
 TLV (Type, Length, Value)

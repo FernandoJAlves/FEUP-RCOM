@@ -18,7 +18,7 @@
 
 int llopenR(int porta, int status);
 
-unsigned char * llread(int fd, unsigned int  * size);
+unsigned char * llread(int fd, unsigned long  * size);
 
 unsigned char SET[5];
 unsigned char UA[5];

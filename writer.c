@@ -12,7 +12,6 @@ int tramaInfo=0;
 //main function called after choosing sender/receiver
 
 int llwriteW(int fd, unsigned char * packetsFromCtrl,int sizeOfTrama){
-  int validTrama;
   numAttempts=0;
   isConnected=0;
   flag=1;
@@ -83,14 +82,12 @@ int llwriteW(int fd, unsigned char * packetsFromCtrl,int sizeOfTrama){
     read(fd,&readByte,1);
     unsigned char C=readControlMessage(readByte,curr_state);
     if((C==RR0 && tramaInfo) || (C==RR1 && tramaInfo)){
-        validTrama=1;
         numAttempts=0;
         printf("trama valida %x",C);
         alarm(0);
     }
     else if ((C==REJ0 && tramaInfo) || (C==REJ1 && tramaInfo)){
       printf("trama invalida %x",C);
-      validTrama=0;
       alarm(0);
     }
     else return -1;

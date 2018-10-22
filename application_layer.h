@@ -13,13 +13,13 @@ applicationLayer app_layer;
 
 //  WRITER FUNCTIONS
 
-unsigned char * makeControlPackage_I(off_t fileSize, unsigned char * fileName, long int fileName_size, int * finalSize, unsigned char start_or_end);
+unsigned char * makeControlPackage_I(off_t fileSize, unsigned char * fileName, long int fileName_size, long int * finalSize, unsigned char start_or_end);
 unsigned char * readFile(unsigned char * fileName, long int * fileSize);
 void data_writer(int argc, char * argv[]);
 
 unsigned char * makePacketHeader(unsigned char * fileFragment, long int fileSize, int * sizeOfFragment);
 unsigned char * splitFile(unsigned char * file, long int * curr_index, int * packetSize, long int fileSize);
-void createFile(unsigned char *mensagem, off_t *sizeFile, unsigned char filename[]);
+void createFile(unsigned char *mensagem, off_t *sizeFile, char * filename);
 //  READER FUNCTIONS
 
 void data_reader(int argc, char * argv[]);
