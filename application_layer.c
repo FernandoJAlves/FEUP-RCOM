@@ -57,8 +57,6 @@ void data_writer(int argc, char * argv[]){
 
     fd=llopenW(1,2);
 
-    printf("Passou Open()\n");
-
 // TODO - Tirar hardcoded
     int file_name_size = strlen(pinguim);
     unsigned char * file_name = (unsigned char *)malloc(file_name_size);
@@ -120,9 +118,10 @@ void data_reader(int argc, char * argv[]){
         dataPacket=llread(fd,&size);
         //printf("chegou %lu",sizeEnd);
         printf("\nsize of file received in bytes: %lu\n",size);
+        printf("Packet content: %x\n",dataPacket[0]);
         if(dataPacket[0]==CTRL_C_END){
          printf("CHEGOU %x",dataPacket[0]);
-         break;
+         reading = 0;
         }
        //remove headers
       //0 memcpy(finalFile+index,dataPacket,size);

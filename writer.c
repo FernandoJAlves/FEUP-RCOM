@@ -7,6 +7,7 @@ int isConnected=0;
 int openOrWrite=0;
 //handles the alarm signal
 int flag=0;
+
 int tramaInfo=0;
 
 //main function called after choosing sender/receiver
@@ -20,14 +21,12 @@ int llwriteW(int fd, unsigned char * packetsFromCtrl,int sizeOfTrama){
   finalSize=sizeOfTrama+6;
   finalMessage[0]=FLAG;
   finalMessage[1]=Aemiss;
-  tramaInfo=(int)packetsFromCtrl[0]; //MIGHT BE WRONG
+  printf("Trama info: %x\n",tramaInfo);
   if(tramaInfo){
     finalMessage[2]=nsC;
   }
   else  finalMessage[2]=nsI;
   finalMessage[3]=finalMessage[1]^finalMessage[2];
-  
-  printf("Passou 1\n");
 
   int numOfTramas;
   int j=4;
@@ -54,8 +53,6 @@ int llwriteW(int fd, unsigned char * packetsFromCtrl,int sizeOfTrama){
     }
   }
 
-  printf("Passou 2\n");
-
   int sizeBCC2=1;
   unsigned char *BCC2Stuffed=(unsigned char*)malloc(sizeof(unsigned char));
   unsigned char BCC2=getBCC2(packetsFromCtrl,sizeOfTrama);
@@ -71,22 +68,19 @@ int llwriteW(int fd, unsigned char * packetsFromCtrl,int sizeOfTrama){
     j++;
   }
   finalMessage[j + 1] = FLAG;
-  int curr_state=0;
-
-  printf("Passou 3\n");
 
   while((!isConnected) && (numAttempts < 4)){
     write(fd,finalMessage,finalSize);
     alarm(3);
-    unsigned char readByte;
-    read(fd,&readByte,1);
-    unsigned char C=readControlMessage(readByte,curr_state);
-    if((C==RR0 && tramaInfo) || (C==RR1 && tramaInfo)){
+    unsigned char C=readControlMessage(fd);
+    printf("C=%x\n",C);
+    if((C==RR0 && tramaInfo == 1) || (C==RR1 && tramaInfo == 0)){
         numAttempts=0;
+        tramaInfo ^= 1;
         printf("trama valida %x",C);
         alarm(0);
     }
-    else if ((C==REJ0 && tramaInfo) || (C==REJ1 && tramaInfo)){
+    else if ((C==REJ0) || (C==REJ1)){
       printf("trama invalida %x",C);
       alarm(0);
     }
@@ -192,6 +186,82 @@ void timeout(){
     callAlarm();
 }
 
+unsigned char readControlMessage(int fd)
+{
+  //unsigned char result = 0;
+  int curr_state = 0;
+  unsigned char c, returnValue;
+  while (curr_state != 5)
+  {
+    read(fd,&c,1);
+    switch (curr_state)
+    {
+    case 0:
+      if (c == FLAG)
+      {
+        curr_state = 1;
+      }
+      break;
+    case 1:
+      if (c == FLAG)
+      {
+        curr_state = 1;
+      }
+      else if (c == Aemiss)
+      {
+        curr_state = 2;
+      }
+      else
+      {
+        curr_state = 0;
+      }
+      break;
+    case 2:
+      if (c == FLAG)
+      {
+        curr_state = 1;
+      }
+      else if (c == RR0 || c == RR1 || c == REJ0 || c == REJ1 || c == DISC)
+      {
+        curr_state = 3;
+        returnValue = c;
+      }
+      else
+      {
+        curr_state = 0;
+      }
+      break;
+    case 3:
+      if (c == FLAG)
+      {
+        curr_state = 1;
+      }
+      else if (c == (Arec ^ returnValue))
+      {
+        curr_state = 4;
+      }
+      else
+      {
+        curr_state = 0;
+      }
+      break;
+    case 4:
+      if (c == FLAG)
+      {
+        //TODO
+        curr_state = 5;
+      }
+      else
+      {
+        curr_state = 0;
+      }
+      break;
+    default:
+      break;
+    }
+  }
+  return returnValue;
+}
 
 
 

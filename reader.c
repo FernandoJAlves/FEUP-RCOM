@@ -40,7 +40,7 @@ unsigned char * llread(int fd, unsigned long  * size){
   unsigned char controlField;
   unsigned char c;
   unsigned char *frame = (unsigned char *)malloc(0);
-  int bccCheckedData;
+  int bccCheckedData = 0;
   while(curr_state<5){
 	read(fd,&c,1);
 	//printf("\n na stateMachine: %x",c);
@@ -93,9 +93,9 @@ unsigned char * llread(int fd, unsigned long  * size){
 		  if (c == FLAG){
 				if (checkBCC2(frame, *size)){
 				  if (tramaNum == 0)
-				    sendC(fd, RR0);
-				  else
 				    sendC(fd, RR1);
+				  else
+				    sendC(fd, RR0);
 
 				  curr_state = 6;
 				  bccCheckedData = 1;
@@ -146,8 +146,9 @@ unsigned char * llread(int fd, unsigned long  * size){
   frame = (unsigned char *)realloc(frame, *size);
 
 	*size = *size - 1;
-
-		if (!bccCheckedData)
+		printf("Trama num: %d",tramaNum);
+		printf("Esperado: %d",expectedBCC);
+		if (bccCheckedData)
 		{
 			if (tramaNum == expectedBCC)
 			{

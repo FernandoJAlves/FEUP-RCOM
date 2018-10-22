@@ -38,6 +38,7 @@ int llwrite(int fd, char * buffer, int length);
 // – número de caracteres escritos
 // – valor negativo em caso de erro
 
+unsigned char readControlMessage(int fd);
 
 //Global variables
 int finalSize;
