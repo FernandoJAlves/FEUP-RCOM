@@ -72,7 +72,6 @@ void data_writer(int argc, char * argv[]){
     printf("packet: %x\n", (unsigned int)(*pointerToCtrlPacket));
     printf("size: %ld\n", controlPacketSize);
 
-    //printf("size of File %ld  controlPackageadress %x \n",sizeof(final_size),pointerToCtrlPacket);
     llwriteW(fd, pointerToCtrlPacket, controlPacketSize);
     printf("Control Packet START sent\n");
 
