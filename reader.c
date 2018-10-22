@@ -146,8 +146,8 @@ unsigned char * llread(int fd, unsigned long  * size){
   frame = (unsigned char *)realloc(frame, *size);
 
 	*size = *size - 1;
-		printf("Trama num: %d",tramaNum);
-		printf("Esperado: %d",expectedBCC);
+		printf("Trama num: %d\n",tramaNum);
+		printf("Esperado: %d\n",expectedBCC);
 		if (bccCheckedData)
 		{
 			if (tramaNum == expectedBCC)
@@ -199,7 +199,7 @@ int llopenR(int porta, int status){
           }
         }
         ///SEND UA
-        printf("sent UA");
+        printf("sent UA\n");
         res=write(fd,UA,5);
     }
     return fd;

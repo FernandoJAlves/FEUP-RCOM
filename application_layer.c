@@ -192,7 +192,12 @@ ficheiro, outros valores – a definir, se necessário)
 	  *((off_t *)(finalPackage + 3)) = fileSize;
   	finalPackage[3 + sizeof(fileName)] = T2;  //Nome do ficheiro
   	finalPackage[4 + sizeof(fileName)] = fileName_size;
-	strcat((char*)finalPackage + 5 + sizeof(fileSize),(char*)fileName);
+    int i;
+    for(i = 0; i < fileName_size; i++){
+      finalPackage[5 + sizeof(fileName)] = fileName[i];
+    }
+
+	//strcat((char*)finalPackage + 5 + sizeof(fileSize),(char*)fileName);
 	//printf("size of fileSize:%ld    size of finalPackage:%x",fileSize,sizeof(finalPackage[4]));
 
    // finalPackage[3]=

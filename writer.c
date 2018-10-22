@@ -87,12 +87,12 @@ int llwriteW(int fd, unsigned char *packetsFromCtrl, int sizeOfTrama)
     {
       numAttempts = 0;
       tramaInfo ^= 1;
-      printf("trama valida %x", C);
+      printf("trama valida %x\n", C);
       alarm(0);
     }
     else if ((C == REJ0) || (C == REJ1))
     {
-      printf("trama invalida %x", C);
+      printf("trama invalida %x\n", C);
       alarm(0);
     }
     else
