@@ -22,8 +22,7 @@ unsigned char * llread(int fd, unsigned long  * size);
 
 int sendC(int fd, unsigned char controlField);
 
-unsigned char SET[5];
-unsigned char UA[5];
+
 int fd;
 
 

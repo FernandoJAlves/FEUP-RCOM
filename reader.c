@@ -70,8 +70,7 @@ unsigned char *llread(int fd, unsigned long *size)
 			}
 			break;
 		case 2:
-			//	printf("STUCK  2 : %x\n",c);
-			//	printf("current size  state 2 : %lu\n", size);
+		
 			if (c == nsC)
 			{
 				controlField = c;
@@ -229,11 +228,23 @@ int llopenR(int porta, int status)
 
 
 void llcloseR(int fd){
-	readControlMessage(fd,DISC);
+
+	DISCr[0]=FLAG;
+	DISCr[1]=Aemiss;
+	DISCr[2]=DISC; //não é usado
+	DISCr[3]=DISCr[1]^DISCr[2];
+	DISCr[4]=FLAG;
+
+	UA[0] = FLAG;
+	UA[1] = Aemiss;
+	UA[2] = uaC;
+	UA[3] = UA[1] ^ UA[2];
+	UA[4] = FLAG;
+	readControlMessage(fd,DISCr);
 	printf("Received DISC\n");
 	sendC(fd, DISC);
 	printf("Sent DISC\n");
-	readControlMessage(fd, uaC);
+	readControlMessage(fd, UA);
 	printf("Received UA");
 
 	tcsetattr(fd, TCSANOW, &link_layer.oldPortSettings);

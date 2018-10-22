@@ -7,7 +7,7 @@
 #define CTRL_C_END   0x03
 
 #define Arec 0x01
-#define uaC 0x01
+#define uaC 0x07
 #define setC 0x03
 #define ESCAPEBYTE 0x7D
 #define PINGUIM_SIZE 10968
@@ -18,9 +18,8 @@
 #define RR1 0x85
 #define REJ0 0x01
 #define REJ1 0x81
-#define DISC 0x07
 #define ESCAPE_FLAG1 0x5E
-#define DISC 0x0B
+#define DISC 0x07
 
 #define T1           0x00   //Tamanho do ficheiro
 #define T2           0x01   //Nome do ficheiro

@@ -86,7 +86,13 @@ int llwriteW(int fd, unsigned char *packetsFromCtrl, int sizeOfTrama)
     write(fd, finalMessage, finalSize);
     
     alarm(3);
-    unsigned char C = readControlMessage(fd);
+    RRv[0]=FLAG;
+    RRv[1]=Arec;
+    RRv[2]=RR0; //não é usado
+    RRv[3]=RRv[1]^RRv[2];
+    RRv[4]=FLAG;
+
+    unsigned char C = readControlMessage(fd,RRv);
     
     printf("3\n");
     printf("C=%x\n", C);
@@ -210,85 +216,6 @@ void timeout()
   callAlarm();
 }
 
-unsigned char readControlMessage(int fd)
-{
-  //unsigned char result = 0;
-  int curr_state = 0;
-  unsigned char c, returnValue;
-  while (curr_state != 5)
-  {
-    printf("State: %d\n", curr_state);
-    printf("Here?\n");
-    read(fd, &c, 1);
-    printf("No, here\n");
-    switch (curr_state)
-    {
-    case 0:
-      if (c == FLAG)
-      {
-        curr_state = 1;
-      }
-      break;
-    case 1:
-      if (c == FLAG)
-      {
-        curr_state = 1;
-      }
-      else if (c == Arec)
-      {
-        curr_state = 2;
-      }
-      else
-      {
-        curr_state = 0;
-      }
-      break;
-    case 2:
-      if (c == FLAG)
-      {
-        curr_state = 1;
-      }
-      else if (c == RR0 || c == RR1 || c == REJ0 || c == REJ1 || c == DISC)
-      {
-        curr_state = 3;
-        returnValue = c;
-      }
-      else
-      {
-        curr_state = 0;
-      }
-      break;
-    case 3:
-      if (c == FLAG)
-      {
-        curr_state = 1;
-      }
-      else if (c == (Arec ^ returnValue))
-      {
-        curr_state = 4;
-      }
-      else
-      {
-        curr_state = 0;
-      }
-      break;
-    case 4:
-      if (c == FLAG)
-      {
-        //TODO
-        curr_state = 5;
-      }
-      else
-      {
-        curr_state = 0;
-      }
-      break;
-    default:
-      break;
-    }
-  }
-  return returnValue;
-}
 
 
 
@@ -296,11 +223,15 @@ unsigned char readControlMessage(int fd)
 void llcloseW(int fd){
   sendC(fd, DISC);
   printf("Sent DISC\n");
-
-  unsigned char returnValue = readControlMessage(fd);
+  DISCw[0]=FLAG;
+  DISCw[1]=Arec;
+  DISCw[2]=DISC; //não é usado
+  DISCw[3]=DISCw[1]^DISCw[2];
+  DISCw[4]=FLAG;
+  unsigned char returnValue = readControlMessage(fd,DISCw);
 
   while(returnValue != DISC){
-    returnValue = readControlMessage(fd);
+    returnValue = readControlMessage(fd,DISCw);
   }
 
   printf("Received DISC\n");

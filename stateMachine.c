@@ -78,3 +78,85 @@ int stateMachine(unsigned char c, int curr_state, unsigned char arg[])
   return curr_state;
 }
 
+
+
+unsigned char readControlMessage(int fd,unsigned char * ctrl)
+{
+  //unsigned char result = 0;
+  int curr_state = 0;
+  unsigned char c, returnValue;
+  while (curr_state != 5)
+  {
+    printf("State: %d\n", curr_state);
+    printf("Here?\n");
+    read(fd, &c, 1);
+    printf("No, here\n");
+    switch (curr_state)
+    {
+    case 0:
+      if (c == ctrl[0])
+      {
+        curr_state = 1;
+      }
+      break;
+    case 1:
+      if (c == ctrl[0])
+      {
+        curr_state = 1;
+      }
+      else if (c == ctrl[1])
+      {
+        curr_state = 2;
+      }
+      else
+      {
+        curr_state = 0;
+      }
+      break;
+    case 2:
+      if (c == ctrl[0])
+      {
+        curr_state = 1;
+      }
+      else if (c == RR0 || c == RR1 || c == REJ0 || c == REJ1 || c == DISC)
+      {
+        curr_state = 3;
+        returnValue = c;
+      }
+      else
+      {
+        curr_state = 0;
+      }
+      break;
+    case 3:
+      if (c == ctrl[0])
+      {
+        curr_state = 1;
+      }
+      else if (c == (ctrl[1] ^ ctrl[2]))
+      {
+        curr_state = 4;
+      }
+      else
+      {
+        curr_state = 0;
+      }
+      break;
+    case 4:
+      if (c == ctrl[0])
+      {
+        //TODO
+        curr_state = 5;
+      }
+      else
+      {
+        curr_state = 0;
+      }
+      break;
+    default:
+      break;
+    }
+  }
+  return returnValue;
+}
+
