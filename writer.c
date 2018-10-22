@@ -1,6 +1,7 @@
 #include "writer.h"
 #include "data_link.h"
 #include "stateMachine.h"
+#include "reader.h"
 
 int numAttempts = 0;
 int isConnected = 0;
@@ -81,9 +82,12 @@ int llwriteW(int fd, unsigned char *packetsFromCtrl, int sizeOfTrama)
 
   while ((!isConnected) && (numAttempts < 4))
   {
+    
     write(fd, finalMessage, finalSize);
+    
     alarm(3);
     unsigned char C = readControlMessage(fd);
+    
     printf("3\n");
     printf("C=%x\n", C);
     if ((C == RR0 && tramaInfo == 1) || (C == RR1 && tramaInfo == 0))
@@ -214,7 +218,9 @@ unsigned char readControlMessage(int fd)
   while (curr_state != 5)
   {
     printf("State: %d\n", curr_state);
+    printf("Here?\n");
     read(fd, &c, 1);
+    printf("No, here\n");
     switch (curr_state)
     {
     case 0:
@@ -283,3 +289,30 @@ unsigned char readControlMessage(int fd)
   }
   return returnValue;
 }
+
+
+
+
+void llcloseW(int fd){
+  sendC(fd, DISC);
+  printf("Sent DISC\n");
+
+  unsigned char returnValue = readControlMessage(fd);
+
+  while(returnValue != DISC){
+    returnValue = readControlMessage(fd);
+  }
+
+  printf("Received DISC\n");
+
+  sendC(fd, uaC);
+  printf("Last UA sent\n");
+
+  if(tcsetattr(fd, TCSANOW, &link_layer.oldPortSettings) == -1){
+    perror("tcsetattr");
+    exit(-1);
+  }
+
+
+}
+

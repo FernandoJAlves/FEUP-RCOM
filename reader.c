@@ -1,6 +1,7 @@
 #include "reader.h"
 #include "data_link.h"
 #include "stateMachine.h"
+#include "writer.h"
 
 /*
 
@@ -109,7 +110,7 @@ unsigned char *llread(int fd, unsigned long *size)
 
 					curr_state = 6;
 					bccCheckedData = 1;
-					// printf("Enviou RR, T: %d\n", tramaNum);
+					printf("Enviou RR, T: %d\n", tramaNum);
 				}
 				else
 				{
@@ -119,7 +120,7 @@ unsigned char *llread(int fd, unsigned long *size)
 						sendC(fd, REJ0);
 					curr_state = 6;
 					bccCheckedData = 0;
-					//  printf("Enviou REJ, T: %d\n", tramaNum);
+					printf("Enviou REJ, T: %d\n", tramaNum);
 				}
 			}
 			else if (c == ESCAPEBYTE)
@@ -224,4 +225,20 @@ int llopenR(int porta, int status)
 		res = write(fd, UA, 5);
 	}
 	return fd;
+}
+
+
+void llcloseR(int fd){
+	readControlMessage(fd,DISC);
+	printf("Received DISC\n");
+	sendC(fd, DISC);
+	printf("Sent DISC\n");
+	readControlMessage(fd, uaC);
+	printf("Received UA");
+
+	tcsetattr(fd, TCSANOW, &link_layer.oldPortSettings);
+}
+
+void readC(int fd, int controlMsg){
+
 }

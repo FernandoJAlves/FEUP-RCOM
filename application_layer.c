@@ -88,13 +88,15 @@ void data_writer(int argc, char * argv[]){
       unsigned char * packet_and_header = makePacketHeader(packet, fileSize, &packetHeaderSize);
 
       //TODO - Testar se o llwriteW falhou
+      printf("index = %lu AND fileSize = %lu\n",curr_index,fileSize);
       llwriteW(fd, packet_and_header, packetHeaderSize);
 
 
       printf("Packet enviado: %d\n", writer_msg_count);
     }
-
+    
     unsigned char * pointerToCtrlPacketEnd=makeControlPackage_I(fileSize,file_name, file_name_size,&controlPacketSize,CTRL_C_END); 
+    printf("Before the end\n");
     llwriteW(fd, pointerToCtrlPacketEnd, controlPacketSize);
     printf("Control Packet END sent\n %x",pointerToCtrlPacket[0]);
 
@@ -115,6 +117,9 @@ void data_reader(int argc, char * argv[]){
     while(reading){
         //printf("size of file : %lu \n",sizeEnd);
         dataPacket=llread(fd,&size);
+        if(size == 0){
+          continue;
+        }
         //printf("chegou %lu",sizeEnd);
         printf("\nsize of file received in bytes: %lu\n",size);
         printf("Packet content: %x\n",dataPacket[0]);

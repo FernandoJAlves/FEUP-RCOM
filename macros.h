@@ -20,6 +20,7 @@
 #define REJ1 0x81
 #define DISC 0x07
 #define ESCAPE_FLAG1 0x5E
+#define DISC 0x0B
 
 #define T1           0x00   //Tamanho do ficheiro
 #define T2           0x01   //Nome do ficheiro
