@@ -79,8 +79,8 @@ int llwriteW(int fd, unsigned char *packetsFromCtrl, int sizeOfTrama)
     j++;
   }
   finalMessage[j + 1] = FLAG;
-
-  while ((!isConnected) && (numAttempts < 4))
+  int rej = 0;
+  while (((!isConnected) && (numAttempts < 4)) || rej)
   {
     
     write(fd, finalMessage, finalSize);
@@ -92,19 +92,22 @@ int llwriteW(int fd, unsigned char *packetsFromCtrl, int sizeOfTrama)
     RRv[3]=RRv[1]^RRv[2];
     RRv[4]=FLAG;
 
-    unsigned char C = readControlMessage(fd,RRv);
+    unsigned char C = readControlMessage(fd,RRv,WMODE);
     
     printf("3\n");
     printf("C=%x\n", C);
     if ((C == RR0 && tramaInfo == 1) || (C == RR1 && tramaInfo == 0))
     {
+      rej = 0;
       numAttempts = 0;
       tramaInfo ^= 1;
       printf("trama valida %x\n", C);
       alarm(0);
+
     }
     else if ((C == REJ0) || (C == REJ1))
     {
+      rej = 1;
       printf("trama invalida %x\n", C);
       alarm(0);
     }
@@ -232,10 +235,10 @@ void llcloseW(int fd){
   DISCw[2]=DISC; //não é usado
   DISCw[3]=DISCw[1]^DISCw[2];
   DISCw[4]=FLAG;
-  unsigned char returnValue = readControlMessage(fd,DISCw);
+  unsigned char returnValue = readControlMessage(fd,DISCw,WMODE);
 
   while(returnValue != DISC){
-    returnValue = readControlMessage(fd,DISCw);
+    returnValue = readControlMessage(fd,DISCw,WMODE);
   }
 
   printf("Received DISC\n");

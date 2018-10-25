@@ -241,11 +241,11 @@ void llcloseR(int fd){
 	UA[2] = uaC;
 	UA[3] = UA[1] ^ UA[2];
 	UA[4] = FLAG;
-	readControlMessage(fd,DISCr);
+	readControlMessage(fd,DISCr,RMODE);
 	printf("Received DISC\n");
 	sendC(fd, DISC);
 	printf("Sent DISC\n");
-	readControlMessage(fd, UA);
+	readControlMessage(fd, UA,RMODE);
 	printf("Received UA");
 
 	tcsetattr(fd, TCSANOW, &link_layer.oldPortSettings);

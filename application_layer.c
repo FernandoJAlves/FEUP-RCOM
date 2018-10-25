@@ -104,7 +104,7 @@ void data_writer(int argc, char *argv[])
   llwriteW(fd, pointerToCtrlPacketEnd, controlPacketSize);
   printf("Control Packet END sent\n %x", pointerToCtrlPacket[0]);
 
-  llcloseW(fd);
+  //llcloseW(fd);
 }
 
 void data_reader(int argc, char *argv[])
@@ -135,6 +135,7 @@ void data_reader(int argc, char *argv[])
     {
       printf("CHEGOU %x", dataPacket[0]);
       reading = 0;
+      break;
     }
     //remove headers
     dataPacket = removeHeaders(dataPacket, &size);
@@ -144,7 +145,7 @@ void data_reader(int argc, char *argv[])
   }
   printf("value of size:  %lu", index);
   createFile(finalFile, &index, "output.gif");
-  llcloseR(fd);
+  //llcloseR(fd);
 }
 
 void createFile(unsigned char *mensagem, off_t *sizeFile, char *filename)
