@@ -51,4 +51,6 @@ int llwriteW(int fd, unsigned char * startOfFile,int finalSize);
 unsigned char getBCC2(unsigned char *mensagem, int size);
 unsigned char *stuffing_BCC2(unsigned char BCC2, int *sizeOfBCC2);
 
+void llcloseW(int fd);
+
 #endif

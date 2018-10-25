@@ -4,6 +4,7 @@
 typedef struct {
 int fileDescriptor; /*Descritor correspondente à porta série*/
 int status; /*TRANSMITTER | RECEIVER*/
+int size;
 }applicationLayer;
 
 applicationLayer app_layer;
@@ -23,5 +24,6 @@ void createFile(unsigned char *mensagem, off_t *sizeFile, char * filename);
 //  READER FUNCTIONS
 
 void data_reader(int argc, char * argv[]);
+unsigned char * removeHeaders(unsigned char * packetWithHeader,unsigned long * sizeWithHeaders);
 
 #endif

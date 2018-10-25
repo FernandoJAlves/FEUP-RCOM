@@ -212,6 +212,10 @@ void callAlarm()
 void timeout()
 {
   numAttempts++;
+  
+  if(numAttempts > 4){
+    exit(0);
+  }
   printf("Attempt number=%d\n", numAttempts);
   callAlarm();
 }

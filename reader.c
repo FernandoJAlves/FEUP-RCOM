@@ -2,7 +2,7 @@
 #include "data_link.h"
 #include "stateMachine.h"
 #include "writer.h"
-
+#include "application_layer.h"
 /*
 
 */
@@ -156,9 +156,10 @@ unsigned char *llread(int fd, unsigned long *size)
 			break;
 		}
 	}
-	frame = (unsigned char *)realloc(frame, *size);
+	frame = (unsigned char *)realloc(frame, *size-1);
 
 	*size = *size - 1;
+	app_layer.size=*size;
 	printf("Trama num: %d\n", tramaNum);
 	printf("Esperado: %d\n", expectedBCC);
 	if (bccCheckedData)

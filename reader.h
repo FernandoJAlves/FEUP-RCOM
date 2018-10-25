@@ -22,6 +22,8 @@ unsigned char * llread(int fd, unsigned long  * size);
 
 int sendC(int fd, unsigned char controlField);
 
+void llcloseR(int fd);
+
 
 int fd;
 

@@ -80,7 +80,7 @@ int stateMachine(unsigned char c, int curr_state, unsigned char arg[])
 
 
 
-unsigned char readControlMessage(int fd,unsigned char * ctrl)
+unsigned char readControlMessage(int fd,unsigned char * ctrl,int flag)
 {
   //unsigned char result = 0;
   int curr_state = 0;
@@ -129,7 +129,22 @@ unsigned char readControlMessage(int fd,unsigned char * ctrl)
       }
       break;
     case 3:
+    if(flag){
       if (c == ctrl[0])
+      {
+        curr_state = 1;
+      }
+      else if (c == (ctrl[1] ^ returnValue))
+      {
+        curr_state = 4;
+      }
+      else
+      {
+        curr_state = 0;
+      }
+    }
+    else{
+       if (c == ctrl[0])
       {
         curr_state = 1;
       }
@@ -141,6 +156,7 @@ unsigned char readControlMessage(int fd,unsigned char * ctrl)
       {
         curr_state = 0;
       }
+    }
       break;
     case 4:
       if (c == ctrl[0])
