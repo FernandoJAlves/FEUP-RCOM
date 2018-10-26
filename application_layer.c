@@ -12,7 +12,6 @@ unsigned int writer_msg_count = 0;
 
 int main(int argc, char **argv)
 {
-  //printf("Size: %d",sizeof(off_t));    TODO - MAYBE CHANGE LONG INT TO OFF_T
 
   if ((argc < 4 && ((strcmp("S", argv[2]) == 0))) || (argc < 3 && ((strcmp("R", argv[2]) == 0))) ||
       ((strcmp("1", argv[1]) != 0) && (strcmp("2", argv[1]) != 0)) ||
@@ -74,8 +73,7 @@ void data_writer(int argc, char *argv[])
   printf("fileSize: %ld\n", fileSize);
   unsigned char *pointerToCtrlPacket = makeControlPackage_I(fileSize, file_name, file_name_size, &controlPacketSize, CTRL_C_START);
 
-  printf("packet: %x\n", (unsigned int)(*pointerToCtrlPacket));
-  printf("size: %ld\n", controlPacketSize);
+
 
   llwriteW(fd, pointerToCtrlPacket, controlPacketSize);
 
@@ -103,7 +101,7 @@ void data_writer(int argc, char *argv[])
   llwriteW(fd, pointerToCtrlPacketEnd, controlPacketSize);
   printf("Control Packet END sent\n %x", pointerToCtrlPacket[0]);
 
-  //llcloseW(fd);
+  llcloseW(fd);
 }
 
 void data_reader(int argc, char *argv[])
@@ -125,19 +123,14 @@ void data_reader(int argc, char *argv[])
   unsigned long fileSize = 0;
   while (reading)
   {
-    //printf("size of file : %lu \n",sizeEnd);
     dataPacket = llread(fd, &size);
     fileSize += size;
     if (size == 0)
     {
       continue;
     }
-    printf("chegou %lu", fileSize);
-    printf("\nsize of file received in bytes: %lu\n", size);
-    printf("Packet content: %x\n", dataPacket[0]);
     if (dataPacket[0] == CTRL_C_END)
     {
-      printf("CHEGOU %x", dataPacket[0]);
       reading = 0;
       break;
     }
@@ -149,7 +142,7 @@ void data_reader(int argc, char *argv[])
   }
   printf("value of size:  %lu", index);
   createFile(finalFile, &index, "output.gif");
-  //llcloseR(fd);
+  llcloseR(fd);
 }
 
 void createFile(unsigned char *mensagem, off_t *sizeFile, char *filename)

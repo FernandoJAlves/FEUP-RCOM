@@ -87,10 +87,8 @@ unsigned char readControlMessageW(int fd,unsigned char * ctrl)
   unsigned char c, returnValue;
   while (curr_state != 5)
   {
-    printf("State: %d\n", curr_state);
-    printf("Here?\n");
     read(fd, &c, 1);
-    printf("No, here\n");
+    
     switch (curr_state)
     {
     case 0:
@@ -143,10 +141,10 @@ unsigned char readControlMessageW(int fd,unsigned char * ctrl)
       }
       break;
     case 4:
-    printf("var c = %x\n",c);
+    
       if (c == ctrl[0])
       {
-        //TODO
+        
         curr_state = 5;
         return returnValue;
       }
@@ -169,10 +167,9 @@ unsigned char readControlMessageR(int fd,unsigned char * ctrl)
   unsigned char c;
   while (curr_state != 5)
   {
-    printf("State: %d\n", curr_state);
-    printf("Here?\n");
+    
     read(fd, &c, 1);
-    printf("No, here\n");
+    
     switch (curr_state)
     {
     case 0:

@@ -91,7 +91,6 @@ int llwriteW(int fd, unsigned char *packetsFromCtrl, int sizeOfTrama)
     RRv[4]=FLAG;
 
     unsigned char C = readControlMessageW(fd,RRv);
-    printf("Last value: %x\n",packetsFromCtrl[0]);
     
     if ((C == RR0 && tramaInfo == 1) || (C == RR1 && tramaInfo == 0))
     {
