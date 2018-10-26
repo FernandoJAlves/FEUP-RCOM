@@ -14,7 +14,7 @@ int main(int argc, char **argv)
 {
   //printf("Size: %d",sizeof(off_t));    TODO - MAYBE CHANGE LONG INT TO OFF_T
 
-  if ((argc < 4 && ((strcmp("S", argv[2]) != 0))) || (argc < 3 && ((strcmp("R", argv[2]) != 0))) ||
+  if ((argc < 4 && ((strcmp("S", argv[2]) == 0))) || (argc < 3 && ((strcmp("R", argv[2]) == 0))) ||
       ((strcmp("1", argv[1]) != 0) && (strcmp("2", argv[1]) != 0)) ||
       ((strcmp("S", argv[2]) != 0) && (strcmp("R", argv[2]) != 0)))
   {
