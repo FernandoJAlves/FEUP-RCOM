@@ -14,12 +14,12 @@ int main(int argc, char **argv)
 {
   //printf("Size: %d",sizeof(off_t));    TODO - MAYBE CHANGE LONG INT TO OFF_T
 
-  if ((argc < 3) ||
+  if ((argc < 4 && ((strcmp("S", argv[2]) != 0))) || (argc < 3 && ((strcmp("R", argv[2]) != 0))) ||
       ((strcmp("1", argv[1]) != 0) && (strcmp("2", argv[1]) != 0)) ||
       ((strcmp("S", argv[2]) != 0) && (strcmp("R", argv[2]) != 0)))
   {
 
-    printf("Usage:\tnserial SerialPort ComunicationMode\n\tex: nserial [1|2] [S|R]\n");
+    printf("Usage:\tnserial SerialPort ComunicationMode\n\tex: nserial [1|2] [S|R] [fileName]\n");
     exit(1);
   }
 
@@ -64,9 +64,9 @@ void data_writer(int argc, char *argv[])
   fd = llopenW(1, 2);
 
   // TODO - Tirar hardcoded
-  int file_name_size = strlen(pinguim);
+  int file_name_size = strlen(argv[3]);
   unsigned char *file_name = (unsigned char *)malloc(file_name_size);
-  file_name = (unsigned char *)pinguim;
+  file_name = (unsigned char *)argv[3];
 
   off_t fileSize;
   long int controlPacketSize = 0;
@@ -115,6 +115,11 @@ void data_reader(int argc, char *argv[])
   unsigned char *startPacket = llread(fd, &size);
 
   printf("Start packet: %x", *startPacket);
+
+  //unsigned long fileName_size = startPacket[3 + startPacket[2] + 2 - 1];
+  //char * fileName = (char *)malloc(fileName_size * sizeof(char));
+  //strncpy(fileName, (char*)startPacket[3 + startPacket[2] + 2 ], fileName_size);
+
   unsigned char *dataPacket;
   unsigned char *finalFile = malloc(0);
   off_t index = 0;
