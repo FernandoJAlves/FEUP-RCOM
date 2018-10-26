@@ -227,7 +227,7 @@ void timeout()
 
 
 void llcloseW(int fd){
-  sendC(fd, DISC);
+  sendC(fd, DISC,WMODE);
   printf("Sent DISC\n");
   DISCw[0]=FLAG;
   DISCw[1]=Arec;
@@ -242,7 +242,7 @@ void llcloseW(int fd){
 
   printf("Received DISC\n");
 
-  sendC(fd, uaC);
+  sendC(fd, uaC,WMODE);
   printf("Last UA sent\n");
 
   if(tcsetattr(fd, TCSANOW, &link_layer.oldPortSettings) == -1){

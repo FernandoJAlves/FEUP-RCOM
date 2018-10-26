@@ -24,11 +24,17 @@ int checkBCC2(unsigned char *packet, int size)
 		return 0;
 }
 
-int sendC(int fd, unsigned char controlField)
+int sendC(int fd, unsigned char controlField,int flag)
 {
 	unsigned char controlPacket[5];
 	controlPacket[0] = FLAG;
-	controlPacket[1] = Arec;
+	if(flag == 1){
+		controlPacket[1] = Aemiss;
+	}
+	else{
+		controlPacket[1] = Arec;
+	}
+	
 	controlPacket[2] = controlField;
 	controlPacket[3] = controlPacket[1] ^ controlPacket[2];
 	controlPacket[4] = FLAG;
@@ -103,9 +109,9 @@ unsigned char *llread(int fd, unsigned long *size)
 				if (checkBCC2(frame, *size))
 				{
 					if (tramaNum == 0)
-						sendC(fd, RR1);
+						sendC(fd, RR1,RMODE);
 					else
-						sendC(fd, RR0);
+						sendC(fd, RR0,RMODE);
 
 					curr_state = 6;
 					bccCheckedData = 1;
@@ -114,9 +120,9 @@ unsigned char *llread(int fd, unsigned long *size)
 				else
 				{
 					if (tramaNum == 0)
-						sendC(fd, REJ1);
+						sendC(fd, REJ1,RMODE);
 					else
-						sendC(fd, REJ0);
+						sendC(fd, REJ0,RMODE);
 					curr_state = 6;
 					bccCheckedData = 0;
 					printf("Enviou REJ, T: %d\n", tramaNum);
@@ -243,7 +249,7 @@ void llcloseR(int fd){
 	UA[4] = FLAG;
 	readControlMessageR(fd,DISCr);
 	printf("Received DISC\n");
-	sendC(fd, DISC);
+	sendC(fd, DISC,RMODE);
 	printf("Sent DISC\n");
 	readControlMessageR(fd, UA);
 	printf("Received UA");

@@ -25,6 +25,9 @@
 #define T2           0x01   //Nome do ficheiro
 #define L1           0x04   //4 - Tamanho de um long int
 
+#define WMODE 1
+#define RMODE 0
+
 #define ESCAPE_FLAG2 0x5D
 
 
