@@ -78,8 +78,7 @@ void data_writer(int argc, char *argv[])
   printf("size: %ld\n", controlPacketSize);
 
   llwriteW(fd, pointerToCtrlPacket, controlPacketSize);
-  printf("Control Packet START sent\n");
-
+  getchar();
   int packetSize = PACKET_SIZE;
   long int curr_index = 0;
 

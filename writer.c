@@ -23,8 +23,7 @@ int llwriteW(int fd, unsigned char *packetsFromCtrl, int sizeOfTrama)
   finalSize = sizeOfTrama + 6;
   finalMessage[0] = FLAG;
   finalMessage[1] = Aemiss;
-  printf("Trama info: %x\n", tramaInfo);
-  printf("1\n");
+
   if (!tramaInfo)
   {
     finalMessage[2] = nsC;
@@ -63,7 +62,6 @@ int llwriteW(int fd, unsigned char *packetsFromCtrl, int sizeOfTrama)
     }
   }
 
-  printf("2\n");
   int sizeBCC2 = 1;
   unsigned char *BCC2Stuffed = (unsigned char *)malloc(sizeof(unsigned char));
   unsigned char BCC2 = getBCC2(packetsFromCtrl, sizeOfTrama);
@@ -93,9 +91,8 @@ int llwriteW(int fd, unsigned char *packetsFromCtrl, int sizeOfTrama)
     RRv[4]=FLAG;
 
     unsigned char C = readControlMessageW(fd,RRv);
+    printf("Last value: %x\n",packetsFromCtrl[0]);
     
-    printf("3\n");
-    printf("C=%x\n", C);
     if ((C == RR0 && tramaInfo == 1) || (C == RR1 && tramaInfo == 0))
     {
       rej = 0;

@@ -12,7 +12,7 @@
 
 int stateMachine(unsigned char c, int curr_state, unsigned char arg[])
 {
-  //printf("State: %d\n", curr_state);
+  
   switch (curr_state)
   {
   case 0:
@@ -143,6 +143,7 @@ unsigned char readControlMessageW(int fd,unsigned char * ctrl)
       }
       break;
     case 4:
+    printf("var c = %x\n",c);
       if (c == ctrl[0])
       {
         //TODO
