@@ -100,6 +100,9 @@ int llwriteW(int fd, unsigned char *packetsFromCtrl, int sizeOfTrama)
       tramaInfo ^= 1;
       printf("trama valida %x\n", C);
       alarm(0);
+      if(packetsFromCtrl[0] == 0x03){
+        break;
+      }
 
     }
     else if ((C == REJ0) || (C == REJ1))
