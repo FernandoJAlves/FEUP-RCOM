@@ -61,7 +61,6 @@ unsigned char *llread(int fd, unsigned long *size)
 			}
 			break;
 		case 1:
-			//	printf("STUCK  1 : %x\n",c);
 			if (c == FLAG)
 			{
 				curr_state = 1;

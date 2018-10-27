@@ -79,6 +79,7 @@ void data_writer(int argc, char *argv[])
 
   int packetSize = PACKET_SIZE;
   long int curr_index = 0;
+  unsigned long progress = 0;
 
   while (curr_index < fileSize && packetSize == PACKET_SIZE)
   {
@@ -90,6 +91,9 @@ void data_writer(int argc, char *argv[])
     unsigned char *packet_and_header = makePacketHeader(packet, fileSize, &packetHeaderSize);
 
     //TODO - Testar se o llwriteW falhou
+    progress = (unsigned long)(((double)curr_index/(double)fileSize)*100);
+    printf("Progress: %lu%%\n", progress);
+
     printf("index = %lu AND fileSize = %lu\n", curr_index, fileSize);
     llwriteW(fd, packet_and_header, packetHeaderSize);
 
@@ -123,6 +127,7 @@ void data_reader(int argc, char *argv[])
   unsigned long fileSize = 0;
   while (reading)
   {
+    printf("================\n");
     dataPacket = llread(fd, &size);
     fileSize += size;
     if (size == 0)
