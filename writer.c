@@ -62,9 +62,9 @@ int llwriteW(int fd, unsigned char *packetsFromCtrl, int sizeOfTrama)
   }
 
   int sizeBCC2 = 1;
-  unsigned char *BCC2Stuffed = (unsigned char *)malloc(sizeof(unsigned char));
+  unsigned char *BCC2Stuffed /*= (unsigned char *)malloc(sizeof(unsigned char))*/;
   unsigned char BCC2 = getBCC2(packetsFromCtrl, sizeOfTrama);
-  BCC2Stuffed = stuffing_BCC2(BCC2, &sizeBCC2);
+  BCC2Stuffed = stuffing(BCC2, &sizeBCC2);
   //if()
   if (sizeBCC2 == 1)
     finalMessage[j] = BCC2; //bcc ok
@@ -94,7 +94,7 @@ int llwriteW(int fd, unsigned char *packetsFromCtrl, int sizeOfTrama)
     {
       rej = 0;
       numAttempts = 0;
-      tramaInfo ^= 1;
+      tramaInfo = (tramaInfo+1) % 2;
       if(C == RR0){
         printf("RR0 received\n");
       }
@@ -118,6 +118,7 @@ int llwriteW(int fd, unsigned char *packetsFromCtrl, int sizeOfTrama)
         printf("REJ1 received\n");
       }
       alarm(0);
+      //break;
     }
     else
       return -1;
@@ -135,20 +136,20 @@ unsigned char getBCC2(unsigned char *mensagem, int size)
   return BCC2;
 }
 
-unsigned char *stuffing_BCC2(unsigned char BCC2, int *sizeOfBCC2)
+unsigned char *stuffing(unsigned char buff, int *size)
 {
   unsigned char *returnValue;
   returnValue = (unsigned char *)malloc(2 * sizeof(unsigned char *));
 
-  if (BCC2 == FLAG){
+  if (buff == FLAG){
     returnValue[0] = ESCAPEBYTE;
     returnValue[1] = ESCAPE_FLAG1;
-    (*sizeOfBCC2)++;
+    (*size)++;
   }
-  else if (BCC2 == ESCAPEBYTE){
+  else if (buff == ESCAPEBYTE){
     returnValue[0] = ESCAPEBYTE;
     returnValue[1] = ESCAPE_FLAG2;
-    (*sizeOfBCC2)++;
+    (*size)++;
   }
 
   return returnValue;
