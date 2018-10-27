@@ -66,18 +66,22 @@ int llwriteW(int fd, unsigned char *packetsFromCtrl, int sizeOfTrama)
   unsigned char BCC2 = getBCC2(packetsFromCtrl, sizeOfTrama);
   BCC2Stuffed = stuffing(BCC2, &sizeBCC2);
   //if()
-  if (sizeBCC2 == 1)
+  if (sizeBCC2 == 1){
     finalMessage[j] = BCC2; //bcc ok
+    printf("BCC2 normal\n");
+  }
+
   else
   {
     finalMessage = (unsigned char *)realloc(finalMessage, ++finalSize);
     finalMessage[j] = BCC2Stuffed[0];
     finalMessage[j + 1] = BCC2Stuffed[1]; //
     j++;
+    printf("BCC2 stuffed\n");
   }
   finalMessage[j + 1] = FLAG;
   int rej = 0;
-  while (((!isConnected) && (numAttempts < 4)) || rej)
+  do
   {
     write(fd, finalMessage, finalSize);
     
@@ -101,7 +105,8 @@ int llwriteW(int fd, unsigned char *packetsFromCtrl, int sizeOfTrama)
       else{
         printf("RR1 received\n");
       }
-      alarm(0);
+      alarm(0); //ALARM DEVE SALTAR FORA DO LOOP
+      //isConnected = 1;
       if(packetsFromCtrl[0] == CTRL_C_END){
         break;
       }
@@ -122,9 +127,11 @@ int llwriteW(int fd, unsigned char *packetsFromCtrl, int sizeOfTrama)
     }
     else
       return -1;
-  }
+  }while (((!isConnected) && (numAttempts < 4)) || rej);
+
   return 1;
 }
+
 unsigned char getBCC2(unsigned char *mensagem, int size)
 {
   unsigned char BCC2 = mensagem[0];

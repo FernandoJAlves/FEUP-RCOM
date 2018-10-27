@@ -116,7 +116,10 @@ void data_reader(int argc, char *argv[])
   int reading = 1;
   int fd = llopenR(1, 2);
   unsigned long size = 0;
+  expectedBCC = 0;
   unsigned char *startPacket = llread(fd, &size);
+
+  //expectedBCC = 0; //FOI PARA TESTE
 
   //printf("Start packet: %x\n", *startPacket);
 

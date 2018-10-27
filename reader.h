@@ -24,7 +24,7 @@ void llcloseR(int fd);
 
 
 int fd;
-
+int expectedBCC;
 
 //      Application Layer Functions
 

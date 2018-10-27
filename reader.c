@@ -5,7 +5,6 @@
 /*
 
 */
-int expectedBCC = 0;
 
 int checkBCC2(unsigned char *packet, int size)
 {

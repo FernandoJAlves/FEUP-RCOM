@@ -6,7 +6,7 @@
 #define CTRL_C_START 0x02
 #define CTRL_C_END   0x03
 
-#define Arec 0x01
+//#define Arec 0x01
 #define uaC 0x07
 #define setC 0x03
 #define ESCAPEBYTE 0x7D
