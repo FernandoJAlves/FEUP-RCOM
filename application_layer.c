@@ -92,7 +92,7 @@ void data_writer(int argc, char *argv[])
     //TODO - Testar se o llwriteW falhou
     
     progress = (unsigned long)(((double)curr_index/(double)fileSize)*100);
-    printf("===============\n");
+    printf("\n===============\n");
     printf("Progress: %lu%%\n", progress);
     
     llwriteW(fd, packet_and_header, packetHeaderSize);
@@ -118,7 +118,7 @@ void data_reader(int argc, char *argv[])
   unsigned long size = 0;
   unsigned char *startPacket = llread(fd, &size);
 
-  printf("Start packet: %x", *startPacket);
+  //printf("Start packet: %x\n", *startPacket);
 
   //unsigned long fileName_size = startPacket[3 + startPacket[2] + 2 - 1];
   //char * fileName = (char *)malloc(fileName_size * sizeof(char));
@@ -131,7 +131,7 @@ void data_reader(int argc, char *argv[])
   unsigned long fileSize = 0;
   while (reading)
   {
-    printf("================\n");
+    printf("\n================\n");
     dataPacket = llread(fd, &size);
     fileSize += size;
     if (size == 0)

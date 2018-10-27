@@ -155,12 +155,15 @@ unsigned char *llread(int fd, unsigned long *size)
 			expectedBCC ^= 1;
 		}
 		else{
-			printf("Fudeu\n");
+			printf("ERROR: Expected %x, but trama was %x\n", expectedBCC, tramaNum);
 			*size = 0;
 		}
 	}
-	else
+	else{
+		printf("ERROR: Message rejected\n");
 		*size = 0;
+	}
+		
 	//printf("current size : %lu\n", size);
 	return frame;
 }
@@ -193,7 +196,7 @@ int llopenR(int porta, int status)
 	}
 	if (setTermios(fd) < 0)
 	{
-		perror("setting termios settings");
+		perror("Setting termios settings");
 		return -1;
 	}
 	if (link_layer.status)
@@ -209,8 +212,8 @@ int llopenR(int porta, int status)
 			}
 		}
 		///SEND UA
-		printf("sent UA\n");
 		res = write(fd, UA, 5);
+		printf("Sent UA\n");
 	}
 	return fd;
 }
