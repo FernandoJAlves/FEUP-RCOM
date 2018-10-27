@@ -1,7 +1,6 @@
 #include "reader.h"
 #include "data_link.h"
 #include "stateMachine.h"
-#include "writer.h"
 #include "application_layer.h"
 /*
 
@@ -22,24 +21,6 @@ int checkBCC2(unsigned char *packet, int size)
 	}
 	else
 		return 0;
-}
-
-int sendC(int fd, unsigned char controlField,int flag)
-{
-	unsigned char controlPacket[5];
-	controlPacket[0] = FLAG;
-	if(flag == RMODE){
-		controlPacket[1] = Aemiss;
-	}
-	else{
-		controlPacket[1] = Arec;
-	}
-	
-	controlPacket[2] = controlField;
-	controlPacket[3] = controlPacket[1] ^ controlPacket[2];
-	controlPacket[4] = FLAG;
-	int bytes = write(fd, controlPacket, 5);
-	return bytes;
 }
 
 unsigned char *llread(int fd, unsigned long *size)
@@ -108,9 +89,9 @@ unsigned char *llread(int fd, unsigned long *size)
 				if (checkBCC2(frame, *size))
 				{
 					if (tramaNum == 0)
-						sendC(fd, RR1,RMODE);
+						sendControlField(fd, RR1);
 					else
-						sendC(fd, RR0,RMODE);
+						sendControlField(fd, RR0);
 
 					curr_state = 6;
 					bccCheckedData = 1;
@@ -119,9 +100,9 @@ unsigned char *llread(int fd, unsigned long *size)
 				else
 				{
 					if (tramaNum == 0)
-						sendC(fd, REJ1,RMODE);
+						sendControlField(fd, REJ1);
 					else
-						sendC(fd, REJ0,RMODE);
+						sendControlField(fd, REJ0);
 					curr_state = 6;
 					bccCheckedData = 0;
 					printf("Enviou REJ%d\n", tramaNum);
@@ -250,7 +231,7 @@ void llcloseR(int fd){
 	UA[4] = FLAG;
 	readControlMessageR(fd,DISCr);
 	printf("Received DISC\n");
-	sendC(fd, DISC,RMODE);
+	sendControlField(fd, DISC);
 	printf("Sent DISC\n");
 	readControlMessageR(fd, UA);
 	printf("Received UA");

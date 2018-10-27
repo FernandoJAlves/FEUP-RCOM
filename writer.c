@@ -1,7 +1,6 @@
 #include "writer.h"
 #include "data_link.h"
 #include "stateMachine.h"
-#include "reader.h"
 
 int numAttempts = 0;
 int isConnected = 0;
@@ -84,7 +83,7 @@ int llwriteW(int fd, unsigned char *packetsFromCtrl, int sizeOfTrama)
     
     alarm(3);
     RRv[0]=FLAG;
-    RRv[1]=Arec;
+    RRv[1]=Aemiss;
     RRv[2]=RR0; //não é usado
     RRv[3]=RRv[1]^RRv[2];
     RRv[4]=FLAG;
@@ -103,10 +102,10 @@ int llwriteW(int fd, unsigned char *packetsFromCtrl, int sizeOfTrama)
         printf("RR1 received\n");
       }
       alarm(0);
-      if(packetsFromCtrl[0] == 0x03){
+      if(packetsFromCtrl[0] == CTRL_C_END){
         break;
       }
-      break;
+      //break;
 
     }
     else if ((C == REJ0) || (C == REJ1))
@@ -237,7 +236,7 @@ void timeout()
 
 
 void llcloseW(int fd){
-  sendC(fd, DISC,WMODE);
+  sendControlField(fd, DISC);
   printf("Sent DISC\n");
   DISCw[0]=FLAG;
   DISCw[1]=Arec;
@@ -252,7 +251,7 @@ void llcloseW(int fd){
 
   printf("Received DISC\n");
 
-  sendC(fd, uaC,WMODE);
+  sendControlField(fd, uaC);
   printf("Last UA sent\n");
 
   if(tcsetattr(fd, TCSANOW, &link_layer.oldPortSettings) == -1){
@@ -262,4 +261,6 @@ void llcloseW(int fd){
 
 
 }
+
+
 

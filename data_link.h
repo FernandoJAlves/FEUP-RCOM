@@ -29,6 +29,8 @@ LinkLayer link_layer;
 
 int setTermios(int fd);
 
+int sendControlField(int fd, unsigned char controlField);
+
 
 
 

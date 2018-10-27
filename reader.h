@@ -20,8 +20,6 @@ int llopenR(int porta, int status);
 
 unsigned char * llread(int fd, unsigned long  * size);
 
-int sendC(int fd, unsigned char controlField,int flag);
-
 void llcloseR(int fd);
 
 

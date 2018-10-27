@@ -34,3 +34,16 @@ int setTermios(int fd){
   printf("New termios structure set\n");
   return 0;
 }
+
+
+int sendControlField(int fd, unsigned char controlField)
+{
+	unsigned char controlPacket[5];
+	controlPacket[0] = FLAG;
+  controlPacket[1] = Aemiss;
+	controlPacket[2] = controlField;
+	controlPacket[3] = controlPacket[1] ^ controlPacket[2];
+	controlPacket[4] = FLAG;
+	int bytes = write(fd, controlPacket, 5);
+	return bytes;
+}
