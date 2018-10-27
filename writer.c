@@ -80,7 +80,6 @@ int llwriteW(int fd, unsigned char *packetsFromCtrl, int sizeOfTrama)
   int rej = 0;
   while (((!isConnected) && (numAttempts < 4)) || rej)
   {
-    
     write(fd, finalMessage, finalSize);
     
     alarm(3);
@@ -97,17 +96,28 @@ int llwriteW(int fd, unsigned char *packetsFromCtrl, int sizeOfTrama)
       rej = 0;
       numAttempts = 0;
       tramaInfo ^= 1;
-      printf("trama valida %x\n", C);
+      if(C == RR0){
+        printf("RR0 received\n");
+      }
+      else{
+        printf("RR1 received\n");
+      }
       alarm(0);
       if(packetsFromCtrl[0] == 0x03){
         break;
       }
+      break;
 
     }
     else if ((C == REJ0) || (C == REJ1))
     {
       rej = 1;
-      printf("trama invalida %x\n", C);
+      if(C == REJ0){
+        printf("REJ0 received\n");
+      }
+      else{
+        printf("REJ1 received\n");
+      }
       alarm(0);
     }
     else

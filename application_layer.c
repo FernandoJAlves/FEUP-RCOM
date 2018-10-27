@@ -91,10 +91,11 @@ void data_writer(int argc, char *argv[])
     unsigned char *packet_and_header = makePacketHeader(packet, fileSize, &packetHeaderSize);
 
     //TODO - Testar se o llwriteW falhou
+    
     progress = (unsigned long)(((double)curr_index/(double)fileSize)*100);
+    printf("===============\n");
     printf("Progress: %lu%%\n", progress);
-
-    printf("index = %lu AND fileSize = %lu\n", curr_index, fileSize);
+    
     llwriteW(fd, packet_and_header, packetHeaderSize);
 
     printf("Packet enviado: %d\n", writer_msg_count);
@@ -102,6 +103,7 @@ void data_writer(int argc, char *argv[])
 
   unsigned char *pointerToCtrlPacketEnd = makeControlPackage_I(fileSize, file_name, file_name_size, &controlPacketSize, CTRL_C_END);
   printf("Before the end\n");
+
   llwriteW(fd, pointerToCtrlPacketEnd, controlPacketSize);
   printf("Control Packet END sent\n %x", pointerToCtrlPacket[0]);
 
