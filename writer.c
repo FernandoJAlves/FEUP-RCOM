@@ -165,7 +165,7 @@ int llopenW(int porta, int status)
   SET[4] = FLAG;
 
   UA[0] = FLAG;
-  UA[1] = Arec;
+  UA[1] = Aemiss;
   UA[2] = uaC;
   UA[3] = UA[1] ^ UA[2];
   UA[4] = FLAG;
@@ -239,7 +239,7 @@ void llcloseW(int fd){
   sendControlField(fd, DISC);
   printf("Sent DISC\n");
   DISCw[0]=FLAG;
-  DISCw[1]=Arec;
+  DISCw[1]=Aemiss;
   DISCw[2]=DISC; //não é usado
   DISCw[3]=DISCw[1]^DISCw[2];
   DISCw[4]=FLAG;

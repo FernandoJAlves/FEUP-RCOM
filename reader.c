@@ -175,7 +175,7 @@ int llopenR(int porta, int status)
 	SET[4] = FLAG;
 
 	UA[0] = FLAG;
-	UA[1] = Arec;
+	UA[1] = Aemiss;
 	UA[2] = uaC;
 	UA[3] = UA[1] ^ UA[2];
 	UA[4] = FLAG;

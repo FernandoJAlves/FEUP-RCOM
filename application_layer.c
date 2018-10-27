@@ -76,7 +76,6 @@ void data_writer(int argc, char *argv[])
 
 
   llwriteW(fd, pointerToCtrlPacket, controlPacketSize);
-
   int packetSize = PACKET_SIZE;
   long int curr_index = 0;
   unsigned long progress = 0;
@@ -106,7 +105,9 @@ void data_writer(int argc, char *argv[])
 
   llwriteW(fd, pointerToCtrlPacketEnd, controlPacketSize);
   printf("Control Packet END sent\n %x", pointerToCtrlPacket[0]);
-
+  free(pointerToCtrlPacket);
+  free(pointerToCtrlPacketEnd);
+  free(file);
   llcloseW(fd);
 }
 
@@ -122,7 +123,8 @@ void data_reader(int argc, char *argv[])
   //unsigned long fileName_size = startPacket[3 + startPacket[2] + 2 - 1];
   //char * fileName = (char *)malloc(fileName_size * sizeof(char));
   //strncpy(fileName, (char*)startPacket[3 + startPacket[2] + 2 ], fileName_size);
-
+  //free(fileName);
+  free(startPacket);
   unsigned char *dataPacket;
   unsigned char *finalFile = malloc(0);
   off_t index = 0;
@@ -146,9 +148,11 @@ void data_reader(int argc, char *argv[])
     finalFile = (unsigned char *)realloc(finalFile,fileSize);
     memcpy(finalFile + index, dataPacket, size);
     index += size;
+    free(dataPacket);
   }
   printf("value of size:  %lu", index);
   createFile(finalFile, &index, "output.gif");
+  free(finalFile);
   llcloseR(fd);
 }
 
