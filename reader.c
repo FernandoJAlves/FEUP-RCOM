@@ -28,7 +28,7 @@ int sendC(int fd, unsigned char controlField,int flag)
 {
 	unsigned char controlPacket[5];
 	controlPacket[0] = FLAG;
-	if(flag == 1){
+	if(flag == RMODE){
 		controlPacket[1] = Aemiss;
 	}
 	else{
@@ -114,7 +114,7 @@ unsigned char *llread(int fd, unsigned long *size)
 
 					curr_state = 6;
 					bccCheckedData = 1;
-					printf("Enviou RR, T: %d\n", tramaNum);
+					printf("Enviou RR%d\n", tramaNum);
 				}
 				else
 				{
@@ -124,7 +124,7 @@ unsigned char *llread(int fd, unsigned long *size)
 						sendC(fd, REJ0,RMODE);
 					curr_state = 6;
 					bccCheckedData = 0;
-					printf("Enviou REJ, T: %d\n", tramaNum);
+					printf("Enviou REJ%d\n", tramaNum);
 				}
 			}
 			else if (c == ESCAPEBYTE)
@@ -164,7 +164,7 @@ unsigned char *llread(int fd, unsigned long *size)
 	frame = (unsigned char *)realloc(frame, *size-1);
 
 	*size = *size - 1;
-	app_layer.size=*size;
+	//app_layer.size=*size;
 	printf("Trama num: %d\n", tramaNum);
 	printf("Esperado: %d\n", expectedBCC);
 	if (bccCheckedData)
@@ -173,8 +173,10 @@ unsigned char *llread(int fd, unsigned long *size)
 		{
 			expectedBCC ^= 1;
 		}
-		else
+		else{
+			printf("Fudeu\n");
 			*size = 0;
+		}
 	}
 	else
 		*size = 0;
