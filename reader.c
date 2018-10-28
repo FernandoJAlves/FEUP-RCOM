@@ -10,12 +10,17 @@ int checkBCC2(unsigned char *packet, int size)
 {
 	int i;
 	unsigned char byte = packet[0];
+	static int contador = 1;
+	
 	for (i = 1; i < size - 1; i++)
 	{
 		byte = byte ^ packet[i];
 	}
+	printf("%d BCC2: %x\n",contador,byte);
+	printf("Expected: %x\n",packet[size-1]);
 	if (byte == packet[size - 1])
 	{
+		contador++;
 		return 1;
 	}
 	else
@@ -56,13 +61,13 @@ unsigned char *llread(int fd, unsigned long *size)
 			break;
 		case 2:
 		
-			if (c == nsC)
+			if (c == C0)
 			{
 				controlField = c;
 				tramaNum = 0;
 				curr_state = 3;
 			}
-			else if (c == nsI)
+			else if (c == C1)
 			{
 				controlField = c;
 				tramaNum = 1;

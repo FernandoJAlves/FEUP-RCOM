@@ -44,6 +44,8 @@ int sendControlField(int fd, unsigned char controlField)
 	controlPacket[2] = controlField;
 	controlPacket[3] = controlPacket[1] ^ controlPacket[2];
 	controlPacket[4] = FLAG;
+  printf("FLAG: %x\n",controlPacket[0]);
+  printf("Control Field: %x\n",controlPacket[2]);
 	int bytes = write(fd, controlPacket, 5);
 	return bytes;
 }

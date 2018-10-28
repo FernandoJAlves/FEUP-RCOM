@@ -23,12 +23,12 @@ int llwriteW(int fd, unsigned char *packetsFromCtrl, int sizeOfTrama)
   finalMessage[0] = FLAG;
   finalMessage[1] = Aemiss;
 
-  if (!tramaInfo)
+  if (tramaInfo == 0)
   {
-    finalMessage[2] = nsC;
+    finalMessage[2] = C0;
   }
   else
-    finalMessage[2] = nsI;
+    finalMessage[2] = C1;
   finalMessage[3] = finalMessage[1] ^ finalMessage[2];
 
   int numOfTramas;
@@ -98,7 +98,7 @@ int llwriteW(int fd, unsigned char *packetsFromCtrl, int sizeOfTrama)
     {
       rej = 0;
       numAttempts = 0;
-      tramaInfo = (tramaInfo+1) % 2;
+      tramaInfo ^= 1;
       if(C == RR0){
         printf("RR0 received\n");
       }
@@ -258,7 +258,7 @@ void llcloseW(int fd){
   }
 
   printf("Received DISC\n");
-
+  sleep(1);
   sendControlField(fd, uaC);
   printf("Last UA sent\n");
 
