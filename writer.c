@@ -15,6 +15,7 @@ int tramaInfo = 0;
 
 int llwriteW(int fd, unsigned char *packetsFromCtrl, int sizeOfTrama)
 {
+  startCounter();
   numAttempts = 0;
   isConnected = 0;
   flag = 1;
@@ -128,9 +129,9 @@ int llwriteW(int fd, unsigned char *packetsFromCtrl, int sizeOfTrama)
       //break;
     }
     else
-      return -1;
+      break;
   }while (((!isConnected) && (numAttempts < 4)) || rej);
-
+  printf("Transfer Rate: %.1f Kb/s\n",getTransferRate(sizeOfTrama));
   return 1;
 }
 
