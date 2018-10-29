@@ -105,9 +105,9 @@ void data_writer(int argc, char *argv[])
 
   llwriteW(fd, pointerToCtrlPacketEnd, controlPacketSize);
   printf("Control Packet END sent\n %x", pointerToCtrlPacket[0]);
-  //free(pointerToCtrlPacket);
-  //free(pointerToCtrlPacketEnd);
-  //free(file);
+  free(pointerToCtrlPacket);
+  free(pointerToCtrlPacketEnd);
+  free(file);
   llcloseW(fd);
 }
 
