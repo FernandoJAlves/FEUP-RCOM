@@ -144,8 +144,10 @@ void data_reader(int argc, char *argv[])
     printf("\n================\n");
     dataPacket = llread(fd, &size);
     fileSize += size;
-    progress = (int)((double)finalSize)/((double) totalSize);
-    printf("Progress: %d\n",progress);
+    printf("finalSize: %lu\n",index);
+    printf("finalSize: %lu\n",totalSize);
+    progress = 100*(((double)index) / ((double) totalSize));
+    printf("Progress: %d%%\n",progress);
     if (size == 0)
     {
       continue;
@@ -162,7 +164,7 @@ void data_reader(int argc, char *argv[])
     index += size;
     free(dataPacket);
   }
-  printf("value of size:  %lu", index);
+  printf("Size of received file:  %lu\n", index);
   //fileName[0] = 'c';
   createFile(finalFile, &index, fileName);
   free(finalFile);
@@ -174,7 +176,6 @@ void createFile(unsigned char *mensagem, off_t *sizeFile, char *filename)
 {
   FILE *file = fopen(filename, "wb+");
   fwrite((void *)mensagem, 1, *sizeFile, file);
-  printf("%zd\n", *sizeFile);
   printf("New file created\n");
   fclose(file);
 }
@@ -232,13 +233,13 @@ ficheiro, outros valores – a definir, se necessário)
   }
   finalPackage[1] = T1;               //Tamanho do ficheiro
   finalPackage[2] = sizeof(fileSize); //8
-  for(int i = 0; i < finalPackage[2];i++){
+  int i;
+  for(i = 0; i < finalPackage[2];i++){
     finalPackage[3+i] = (fileSize >> (i*8)) & 0xFF;
-    printf("Packet: %x",finalPackage[3+i]);
   }
   finalPackage[3+finalPackage[2]] = T2;
   finalPackage[4+finalPackage[2]] = fileName_size;
-  int i;
+
   for (i = 0; i < fileName_size; i++)
   {
     finalPackage[5+finalPackage[2]+i] = fileName[i];
@@ -327,11 +328,12 @@ unsigned char * removeHeaders(unsigned char *packetWithHeader, unsigned long *si
 
 
 void getStartPacketData(unsigned char * packet,unsigned long * fileSize,int * fileSizeBytes,int * fileNameSize, char * fileName){
+  int i;
   if(!(packet[0] == CTRL_C_START && packet[1] == T1)){
     printf("Invalid Packet: Not start packet\n");
   }
   *fileSizeBytes = (int)packet[2];
-  for(int i = 0; i < *fileSizeBytes;i++){
+  for(i = 0; i < *fileSizeBytes;i++){
     *fileSize = (*fileSize) | (packet[3+i]<<(i*8));
   }
   if(packet[3+*fileSizeBytes] != T2){
@@ -339,7 +341,8 @@ void getStartPacketData(unsigned char * packet,unsigned long * fileSize,int * fi
   }
   *fileNameSize = (int)packet[4+*fileSizeBytes];
   fileName = (char *)realloc(fileName,*fileNameSize);
-  for(int i = 0; i < *fileNameSize;i++){
+  for(i = 0; i < *fileNameSize;i++){
     fileName[i] = packet[5+(*fileSizeBytes)+i];
   }
+
 }
