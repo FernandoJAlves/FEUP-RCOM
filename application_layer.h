@@ -14,8 +14,8 @@ applicationLayer app_layer;
 
 //  WRITER FUNCTIONS
 
-unsigned char * makeControlPackage_I(off_t fileSize, unsigned char * fileName, long int fileName_size, long int * finalSize, unsigned char start_or_end);
-unsigned char * readFile(unsigned char * fileName, long int * fileSize);
+unsigned char * makeControlPackage_I(off_t fileSize, char * fileName, long int fileName_size, long int * finalSize, unsigned char start_or_end);
+unsigned char * readFile(char * fileName, long int * fileSize);
 void data_writer(int argc, char * argv[]);
 
 unsigned char * makePacketHeader(unsigned char * fileFragment, long int fileSize, int * sizeOfFragment);
@@ -25,5 +25,6 @@ void createFile(unsigned char *mensagem, off_t *sizeFile, char * filename);
 
 void data_reader(int argc, char * argv[]);
 unsigned char * removeHeaders(unsigned char * packetWithHeader,unsigned long * sizeWithHeaders);
+void getStartPacketData(unsigned char * packet,unsigned long * fileSize,int * fileSizeBytes,int * fileNameSize, char * fileName);
 
 #endif

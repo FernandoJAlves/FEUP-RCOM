@@ -64,8 +64,7 @@ void data_writer(int argc, char *argv[])
 
   // TODO - Tirar hardcoded
   int file_name_size = strlen(argv[3]);
-  unsigned char *file_name = (unsigned char *)malloc(file_name_size);
-  file_name = (unsigned char *)argv[3];
+  char *file_name = argv[3];
 
   off_t fileSize;
   long int controlPacketSize = 0;
@@ -105,9 +104,9 @@ void data_writer(int argc, char *argv[])
 
   llwriteW(fd, pointerToCtrlPacketEnd, controlPacketSize);
   printf("Control Packet END sent\n %x", pointerToCtrlPacket[0]);
-  free(pointerToCtrlPacket);
-  free(pointerToCtrlPacketEnd);
-  free(file);
+  //free(pointerToCtrlPacket);
+  //free(pointerToCtrlPacketEnd);
+  //free(file);
   llcloseW(fd);
 }
 
@@ -117,21 +116,27 @@ void data_reader(int argc, char *argv[])
   int fd = llopenR(1, 2);
   unsigned long size = 0;
   expectedBCC = 0;
+  
+  char * fileName = (char*)malloc(0);
+  int fileSizeBytes = 0;
+  int fileNameSize = 0;
+  unsigned long totalSize = 0;
+  
+  
   unsigned char *startPacket = llread(fd, &size);
-
-  //expectedBCC = 0; //FOI PARA TESTE
-
-  //printf("Start packet: %x\n", *startPacket);
-
-  //unsigned long fileName_size = startPacket[3 + startPacket[2] + 2 - 1];
-  //char * fileName = (char *)malloc(fileName_size * sizeof(char));
-  //strncpy(fileName, (char*)startPacket[3 + startPacket[2] + 2 ], fileName_size);
-  //free(fileName);
+  getStartPacketData(startPacket,&totalSize,&fileSizeBytes,&fileNameSize,fileName);
+  
+  
+  
   free(startPacket);
   unsigned char *dataPacket;
   unsigned char *finalFile = malloc(0);
   off_t index = 0;
   unsigned long fileSize = 0;
+
+ 
+
+
   while (reading)
   {
     printf("\n================\n");
@@ -154,8 +159,10 @@ void data_reader(int argc, char *argv[])
     free(dataPacket);
   }
   printf("value of size:  %lu", index);
-  createFile(finalFile, &index, "output.gif");
+  //fileName[0] = 'c';
+  createFile(finalFile, &index, fileName);
   free(finalFile);
+  free(fileName);
   llcloseR(fd);
 }
 
@@ -192,7 +199,7 @@ int receivedEND(unsigned char *start, int sizeStart, unsigned char *end, int siz
   }
 }
 
-unsigned char *makeControlPackage_I(off_t fileSize, unsigned char *fileName, long int fileName_size, long int *finalSize, unsigned char start_or_end)
+unsigned char *makeControlPackage_I(off_t fileSize, char *fileName, long int fileName_size, long int *finalSize, unsigned char start_or_end)
 {
   /*
 
@@ -216,28 +223,26 @@ ficheiro, outros valores – a definir, se necessário)
   }
   else
   {
-    printf("Invalid value in start_or_end!");
+    printf("Invalid value in control packet!\n");
     return NULL;
   }
   finalPackage[1] = T1;               //Tamanho do ficheiro
   finalPackage[2] = sizeof(fileSize); //8
-  *((off_t *)(finalPackage + 3)) = fileSize;
-  finalPackage[3 + sizeof(fileName)] = T2; //Nome do ficheiro
-  finalPackage[4 + sizeof(fileName)] = fileName_size;
+  for(int i = finalPackage[2] -1; i >= 0;i--){
+    finalPackage[2+finalPackage[2]-i] = (fileSize >> (i*8)) & 0xFF;
+  }
+  finalPackage[3+finalPackage[2]] = T2;
+  finalPackage[4+finalPackage[2]] = fileName_size;
   int i;
   for (i = 0; i < fileName_size; i++)
   {
-    finalPackage[5 + sizeof(fileName)] = fileName[i];
+    finalPackage[5+finalPackage[2]+i] = fileName[i];
   }
 
-  //strcat((char*)finalPackage + 5 + sizeof(fileSize),(char*)fileName);
-  //printf("size of fileSize:%ld    size of finalPackage:%x",fileSize,sizeof(finalPackage[4]));
-
-  // finalPackage[3]=
   return finalPackage;
 }
 
-unsigned char *readFile(unsigned char *fileName, off_t *fileSize)
+unsigned char *readFile(char *fileName, off_t *fileSize)
 {
 
   FILE *fd;
@@ -248,7 +253,7 @@ unsigned char *readFile(unsigned char *fileName, off_t *fileSize)
     perror("Error while opening the file");
     return NULL;
   }
-  stat((const char *)fileName, &data); //get the file metadata
+  stat(fileName, &data); //get the file metadata
 
   *fileSize = data.st_size; //gets file size in bytes
 
@@ -313,4 +318,23 @@ unsigned char * removeHeaders(unsigned char *packetWithHeader, unsigned long *si
   }
 
   return newPacket;
+}
+
+
+void getStartPacketData(unsigned char * packet,unsigned long * fileSize,int * fileSizeBytes,int * fileNameSize, char * fileName){
+  if(!(packet[0] == CTRL_C_START && packet[1] == T1)){
+    printf("Invalid Packet: Not start packet\n");
+  }
+  *fileSizeBytes = (int)packet[2];
+  for(int i = 0; i < *fileSizeBytes;i++){
+    *fileSize = (*fileSize) | (packet[3+i]<<(i*8));
+  }
+  if(packet[3+*fileSizeBytes] != T2){
+    printf("Invalid Packet: File without name\n");
+  }
+  *fileNameSize = (int)packet[4+*fileSizeBytes];
+  fileName = (char *)realloc(fileName,*fileNameSize);
+  for(int i = 0; i < *fileNameSize;i++){
+    fileName[i] = packet[5+(*fileSizeBytes)+i];
+  }
 }
