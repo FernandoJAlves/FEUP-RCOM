@@ -230,8 +230,9 @@ ficheiro, outros valores – a definir, se necessário)
   }
   finalPackage[1] = T1;               //Tamanho do ficheiro
   finalPackage[2] = sizeof(fileSize); //8
-  for(int i = finalPackage[2] -1; i >= 0;i--){
-    finalPackage[2+finalPackage[2]-i] = (fileSize >> (i*8)) & 0xFF;
+  for(int i = 0; i < finalPackage[2];i++){
+    finalPackage[3+i] = (fileSize >> (i*8)) & 0xFF;
+    printf("Packet: %x",finalPackage[3+i]);
   }
   finalPackage[3+finalPackage[2]] = T2;
   finalPackage[4+finalPackage[2]] = fileName_size;
