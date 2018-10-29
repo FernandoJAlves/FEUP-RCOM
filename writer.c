@@ -1,6 +1,7 @@
 #include "writer.h"
 #include "data_link.h"
 #include "stateMachine.h"
+#include "utilities.h"
 
 int numAttempts = 0;
 int isConnected = 0;
@@ -83,6 +84,7 @@ int llwriteW(int fd, unsigned char *packetsFromCtrl, int sizeOfTrama)
   int rej = 0;
   do
   {
+
     write(fd, finalMessage, finalSize);
     
     alarm(3);

@@ -7,6 +7,7 @@
 #include "application_layer.h"
 #include "writer.h"
 #include "reader.h"
+#include "utilities.h"
 
 unsigned int writer_msg_count = 0;
 
@@ -93,8 +94,9 @@ void data_writer(int argc, char *argv[])
     progress = (unsigned long)(((double)curr_index/(double)fileSize)*100);
     printf("\n===============\n");
     printf("Progress: %lu%%\n", progress);
-    
+    startCounter();
     llwriteW(fd, packet_and_header, packetHeaderSize);
+    printf("Transfer Rate: %f Kb/s",getTransferRate(packetHeaderSize));
 
     printf("Packet enviado: %d\n", writer_msg_count);
   }
