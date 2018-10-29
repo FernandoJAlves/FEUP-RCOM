@@ -143,8 +143,6 @@ void data_reader(int argc, char *argv[])
     printf("\n================\n");
     dataPacket = llread(fd, &size);
     fileSize += size;
-    printf("finalSize: %lu\n",index);
-    printf("finalSize: %lu\n",totalSize);
     progress = 100*(((double)index) / ((double) totalSize));
     printf("Progress: %d%%\n",progress);
     if (size == 0)
