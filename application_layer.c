@@ -135,13 +135,15 @@ void data_reader(int argc, char *argv[])
   unsigned long fileSize = 0;
 
  
-
+  int progress;
 
   while (reading)
   {
     printf("\n================\n");
     dataPacket = llread(fd, &size);
     fileSize += size;
+    progress = (int)((double)finalSize)/((double) totalSize);
+    printf("Progress: %d\n",progress);
     if (size == 0)
     {
       continue;
