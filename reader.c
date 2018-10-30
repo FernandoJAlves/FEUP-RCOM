@@ -92,24 +92,15 @@ unsigned char *llread(int fd, unsigned long *size)
 			{
 				if (checkBCC2(frame, *size))
 				{
-					if (tramaNum == 0)
-						sendControlField(fd, RR1);
-					else
-						sendControlField(fd, RR0);
-
 					curr_state = 6;
 					bccCheckedData = 1;
-					printf("Enviou RR%d\n", tramaNum);
+					//printf("Enviou RR%d\n", tramaNum);
 				}
 				else
 				{
-					if (tramaNum == 0)
-						sendControlField(fd, REJ1);
-					else
-						sendControlField(fd, REJ0);
 					curr_state = 6;
 					bccCheckedData = 0;
-					printf("Enviou REJ%d\n", tramaNum);
+					//printf("Enviou REJ%d\n", tramaNum);
 				}
 			}
 			else if (c == ESCAPEBYTE)
@@ -156,16 +147,29 @@ unsigned char *llread(int fd, unsigned long *size)
 	{
 		if (tramaNum == expectedBCC)
 		{
+			if (tramaNum == 0)
+				sendControlField(fd, RR1);
+			else
+				sendControlField(fd, RR0);
+			printf("Enviou RR%d\n", tramaNum);	
 			expectedBCC ^= 1;
 		}
 		else{
 			printf("ERROR: Expected %x, but trama was %x\n", expectedBCC, tramaNum);
 			*size = 0;
+			if (tramaNum == 0)
+				sendControlField(fd, REJ1);
+			else
+				sendControlField(fd, REJ0);
 		}
 	}
 	else{
 		printf("ERROR: Message rejected\n");
 		*size = 0;
+		if (tramaNum == 0)
+			sendControlField(fd, REJ1);
+		else
+			sendControlField(fd, REJ0);
 	}
 		
 	//printf("current size : %lu\n", size);

@@ -82,7 +82,6 @@ int stateMachine(unsigned char c, int curr_state, unsigned char arg[])
 
 unsigned char readControlMessageW(int fd,unsigned char * ctrl)
 {
-  //unsigned char result = 0;
   int curr_state = 0;
   unsigned char c, returnValue;
   while (curr_state != 5)

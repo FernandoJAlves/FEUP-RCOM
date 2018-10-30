@@ -140,6 +140,7 @@ void data_reader(int argc, char *argv[])
 
   while (reading)
   {
+    size = 0;
     printf("\n================\n");
     dataPacket = llread(fd, &size);
     fileSize += size;

@@ -31,6 +31,7 @@ int llwriteW(int fd, unsigned char *packetsFromCtrl, int sizeOfTrama)
   }
   else
     finalMessage[2] = C1;
+
   finalMessage[3] = finalMessage[1] ^ finalMessage[2];
 
   int numOfTramas;
@@ -70,7 +71,7 @@ int llwriteW(int fd, unsigned char *packetsFromCtrl, int sizeOfTrama)
   //if()
   if (sizeBCC2 == 1){
     finalMessage[j] = BCC2; //bcc ok
-    printf("BCC2 normal\n");
+    //printf("BCC2 normal\n");
   }
 
   else
@@ -79,21 +80,21 @@ int llwriteW(int fd, unsigned char *packetsFromCtrl, int sizeOfTrama)
     finalMessage[j] = BCC2Stuffed[0];
     finalMessage[j + 1] = BCC2Stuffed[1]; //
     j++;
-    printf("BCC2 stuffed\n");
+    //printf("BCC2 stuffed\n");
   }
   finalMessage[j + 1] = FLAG;
   int rej = 0;
-  do
-  {
 
-    write(fd, finalMessage, finalSize);
-    
-    alarm(3);
+  do{
+    write(fd, finalMessage, finalSize);    
     RRv[0]=FLAG;
     RRv[1]=Aemiss;
+     
     RRv[2]=RR0; //não é usado
+    
     RRv[3]=RRv[1]^RRv[2];
     RRv[4]=FLAG;
+    //DELETE ^
 
     unsigned char C = readControlMessageW(fd,RRv);
     
@@ -108,13 +109,10 @@ int llwriteW(int fd, unsigned char *packetsFromCtrl, int sizeOfTrama)
       else{
         printf("RR1 received\n");
       }
-      alarm(0); //ALARM DEVE SALTAR FORA DO LOOP
-      //isConnected = 1;
       if(packetsFromCtrl[0] == CTRL_C_END){
         break;
       }
-      //break;
-
+      break;
     }
     else if ((C == REJ0) || (C == REJ1))
     {
@@ -122,14 +120,14 @@ int llwriteW(int fd, unsigned char *packetsFromCtrl, int sizeOfTrama)
       if(C == REJ0){
         printf("REJ0 received\n");
       }
-      else{
+      else if (C == REJ1){
         printf("REJ1 received\n");
       }
-      alarm(0);
-      //break;
     }
-    else
-      break;
+    else{
+      printf("LIXO!\n"); //TODO Remover isto, só para testes
+    }
+    numAttempts++;
   }while (((!isConnected) && (numAttempts < 4)) || rej);
   printf("Transfer Rate: %.1f Kb/s\n",getTransferRate(sizeOfTrama));
   return 1;
