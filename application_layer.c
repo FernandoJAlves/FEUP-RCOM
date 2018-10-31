@@ -174,7 +174,7 @@ void createFile(unsigned char *mensagem, off_t *sizeFile, char *filename)
 {
   FILE *file = fopen(filename, "wb+");
   fwrite((void *)mensagem, 1, *sizeFile, file);
-  printf("New file created\n");
+  printf("New file %s created\n",filename);
   fclose(file);
 }
 
@@ -255,7 +255,7 @@ unsigned char *readFile(char *fileName, off_t *fileSize)
   if ((fd = fopen(((const char *)fileName), "rb")) == NULL)
   {
     perror("Error while opening the file");
-    return NULL;
+    exit(0);
   }
   stat(fileName, &data); //get the file metadata
 

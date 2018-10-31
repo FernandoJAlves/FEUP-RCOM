@@ -152,7 +152,7 @@ unsigned char *llread(int fd, unsigned long *size)
 			else
 				sendControlField(fd, RR0);
 			printf("Enviou RR%d\n", tramaNum);	
-			expectedBCC ^= 1;
+			expectedBCC = (expectedBCC+1)%2;
 		}
 		else{
 			printf("ERROR: Expected %x, but trama was %x\n", expectedBCC, tramaNum);

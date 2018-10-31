@@ -1,6 +1,8 @@
 #ifndef MACROS_H_
 #define MACROS_H_
 
+#define TIMEOUT 3
+
 #define FLAG 0x07E
 #define Aemiss 0x03
 #define CTRL_C_START 0x02
@@ -23,7 +25,7 @@
 
 #define T1           0x00   //Tamanho do ficheiro
 #define T2           0x01   //Nome do ficheiro
-#define L1           0x04   //4 - Tamanho de um long int
+#define L1           0x08   //4 - Tamanho de um long int
 
 #define WMODE 1
 #define RMODE 0

@@ -65,10 +65,9 @@ int llwriteW(int fd, unsigned char *packetsFromCtrl, int sizeOfTrama)
   }
 
   int sizeBCC2 = 1;
-  unsigned char *BCC2Stuffed /*= (unsigned char *)malloc(sizeof(unsigned char))*/;
+  unsigned char *BCC2Stuffed;
   unsigned char BCC2 = getBCC2(packetsFromCtrl, sizeOfTrama);
   BCC2Stuffed = stuffing(BCC2, &sizeBCC2);
-  //if()
   if (sizeBCC2 == 1){
     finalMessage[j] = BCC2; //bcc ok
     //printf("BCC2 normal\n");
@@ -90,11 +89,9 @@ int llwriteW(int fd, unsigned char *packetsFromCtrl, int sizeOfTrama)
     RRv[0]=FLAG;
     RRv[1]=Aemiss;
      
-    RRv[2]=RR0; //não é usado
-    
-    RRv[3]=RRv[1]^RRv[2];
-    RRv[4]=FLAG;
-    //DELETE ^
+    RRv[2]=RR0; //not used
+    RRv[3]=RRv[1]^RRv[2]; //not used
+    RRv[4]=FLAG; //not used
 
     unsigned char C = readControlMessageW(fd,RRv);
     
@@ -102,16 +99,14 @@ int llwriteW(int fd, unsigned char *packetsFromCtrl, int sizeOfTrama)
     {
       rej = 0;
       numAttempts = 0;
-      tramaInfo ^= 1;
+      tramaInfo = (tramaInfo+1) % 2;
       if(C == RR0){
         printf("RR0 received\n");
       }
       else{
         printf("RR1 received\n");
       }
-      if(packetsFromCtrl[0] == CTRL_C_END){
-        break;
-      }
+
       break;
     }
     else if ((C == REJ0) || (C == REJ1))
@@ -233,7 +228,7 @@ void timeout()
 {
   numAttempts++;
   
-  if(numAttempts > 4){
+  if(numAttempts > TIMEOUT){
     exit(0);
   }
   printf("Attempt number=%d\n", numAttempts);
