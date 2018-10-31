@@ -1,7 +1,7 @@
 #ifndef MACROS_H_
 #define MACROS_H_
 
-#define TIMEOUT 3
+#define MAXATTEMPTS 3
 
 #define FLAG 0x07E
 #define Aemiss 0x03

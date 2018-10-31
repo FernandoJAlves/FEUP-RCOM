@@ -92,7 +92,7 @@ int llwriteW(int fd, unsigned char *packetsFromCtrl, int sizeOfTrama)
     RRv[2]=RR0; //not used
     RRv[3]=RRv[1]^RRv[2]; //not used
     RRv[4]=FLAG; //not used
-
+    alarm(3);
     unsigned char C = readControlMessageW(fd,RRv);
     
     if ((C == RR0 && tramaInfo == 1) || (C == RR1 && tramaInfo == 0))
@@ -123,7 +123,8 @@ int llwriteW(int fd, unsigned char *packetsFromCtrl, int sizeOfTrama)
       printf("LIXO!\n"); //TODO Remover isto, só para testes
     }
     numAttempts++;
-  }while (((!isConnected) && (numAttempts < 4)) || rej);
+    printf("Reattempt number: %d\n",numAttempts);
+  }while (((!isConnected) && (numAttempts < MAXATTEMPTS)) || rej);
   printf("Transfer Rate: %.1f Kb/s\n",getTransferRate(sizeOfTrama));
   return 1;
 }
@@ -228,7 +229,7 @@ void timeout()
 {
   numAttempts++;
   
-  if(numAttempts > TIMEOUT){
+  if(numAttempts > MAXATTEMPTS){
     exit(0);
   }
   printf("Attempt number=%d\n", numAttempts);

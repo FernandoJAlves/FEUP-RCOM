@@ -74,7 +74,7 @@ void data_writer(int argc, char *argv[])
   unsigned char *pointerToCtrlPacket = makeControlPackage_I(fileSize, file_name, file_name_size, &controlPacketSize, CTRL_C_START);
 
 
-
+  initCounter();
   llwriteW(fd, pointerToCtrlPacket, controlPacketSize);
   int packetSize = PACKET_SIZE;
   long int curr_index = 0;
@@ -97,14 +97,14 @@ void data_writer(int argc, char *argv[])
     
     llwriteW(fd, packet_and_header, packetHeaderSize);
 
-    printf("Packet enviado: %d\n", writer_msg_count);
+    printf("Received packet number: %d\n", writer_msg_count);
   }
 
   unsigned char *pointerToCtrlPacketEnd = makeControlPackage_I(fileSize, file_name, file_name_size, &controlPacketSize, CTRL_C_END);
-  printf("Before the end\n");
+  printf("Transfer time: %.2f seconds\n",getDeltaTime());
 
   llwriteW(fd, pointerToCtrlPacketEnd, controlPacketSize);
-  printf("Control Packet END sent\n %x", pointerToCtrlPacket[0]);
+  printf("Control Packet END sent\n");
   free(pointerToCtrlPacket);
   free(pointerToCtrlPacketEnd);
   free(file);
