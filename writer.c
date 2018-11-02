@@ -32,7 +32,7 @@ int llwriteW(int fd, unsigned char *packetsFromCtrl, int sizeOfTrama)
   else
     finalMessage[2] = C1;
 
-  finalMessage[3] = finalMessage[1] ^ finalMessage[2];
+  finalMessage[3] = finalMessage[1] ^ finalMessage[2]; //BCC1
 
   int numOfTramas;
   int j = 4;
@@ -120,7 +120,7 @@ int llwriteW(int fd, unsigned char *packetsFromCtrl, int sizeOfTrama)
       }
     }
     else{
-      printf("LIXO!\n"); //TODO Remover isto, só para testes
+      printf("Invalid data received!\n");
     }
     numAttempts++;
     printf("Reattempt number: %d\n",numAttempts);
@@ -193,16 +193,16 @@ int llopenW(int porta, int status)
     return -1;
   }
   if (!link_layer.status)
-  { //EMISSOR
+  { //Emissor
     if ((!isConnected) && (numAttempts < 4))
     {
       res = write(fd, SET, 5);
       alarm(3);
     }
     printf("Sent SET,waiting for receiver\n");
-    //RECEIVE UA
+    //Receive UA
     while (curr_level < 5)
-    { /* loop for input */
+    { 
       res = read(fd, buf, 1);
       if (res > 0)
       {
@@ -266,6 +266,3 @@ void llcloseW(int fd){
 
 
 }
-
-
-

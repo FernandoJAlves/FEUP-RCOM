@@ -94,13 +94,11 @@ unsigned char *llread(int fd, unsigned long *size)
 				{
 					curr_state = 6;
 					bccCheckedData = 1;
-					//printf("Enviou RR%d\n", tramaNum);
 				}
 				else
 				{
 					curr_state = 6;
 					bccCheckedData = 0;
-					//printf("Enviou REJ%d\n", tramaNum);
 				}
 			}
 			else if (c == ESCAPEBYTE)
