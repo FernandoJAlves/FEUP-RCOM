@@ -66,7 +66,6 @@ int stateMachine(unsigned char c, int curr_state, unsigned char arg[])
   case 4:
     if (c == arg[0])
     {
-      //CTOP = TRUE;
       return curr_state = 5;
     }
     else
@@ -161,7 +160,6 @@ unsigned char readControlMessageW(int fd,unsigned char * ctrl)
 
 unsigned char readControlMessageR(int fd,unsigned char * ctrl)
 {
-  //unsigned char result = 0;
   int curr_state = 0;
   unsigned char c;
   while (curr_state != 5)

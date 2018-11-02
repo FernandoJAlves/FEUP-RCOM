@@ -56,6 +56,7 @@ int main(int argc, char **argv)
   return 0;
 }
 
+//main function called after choosing sender
 void data_writer(int argc, char *argv[])
 {
 
@@ -63,7 +64,6 @@ void data_writer(int argc, char *argv[])
 
   fd = llopenW(1, 2);
 
-  // TODO - Tirar hardcoded
   int file_name_size = strlen(argv[3]);
   char *file_name = argv[3];
 
@@ -98,19 +98,24 @@ void data_writer(int argc, char *argv[])
     llwriteW(fd, packet_and_header, packetHeaderSize);
 
     printf("Received packet number: %d\n", writer_msg_count);
+    free(packet_and_header);
   }
 
   unsigned char *pointerToCtrlPacketEnd = makeControlPackage_I(fileSize, file_name, file_name_size, &controlPacketSize, CTRL_C_END);
-  printf("Transfer time: %.2f seconds\n",getDeltaTime());
-
+  
+  printf("\n===============\n");
   llwriteW(fd, pointerToCtrlPacketEnd, controlPacketSize);
   printf("Control Packet END sent\n");
+  printf("\n===============\n");
+  printf("Transfer time: %.2f seconds\n",getDeltaTime());
+  
   free(pointerToCtrlPacket);
   free(pointerToCtrlPacketEnd);
   free(file);
   llcloseW(fd);
 }
 
+//main function called after choosing receiver
 void data_reader(int argc, char *argv[])
 {
   int reading = 1;
@@ -275,12 +280,12 @@ unsigned char *readFile(char *fileName, off_t *fileSize)
 unsigned char *makePacketHeader(unsigned char *fileFragment, long int fileSize, int *sizeOfFragment)
 {
 
-  unsigned char *dataPacket = (unsigned char *)malloc(fileSize + 4);
+  unsigned char *dataPacket = (unsigned char *)malloc((*sizeOfFragment) + 4);
 
   dataPacket[0] = PACKET_H_C;
   dataPacket[1] = writer_msg_count % 255;
-  dataPacket[2] = (int)fileSize / 256;
-  dataPacket[3] = (int)fileSize % 256;
+  dataPacket[2] = (*sizeOfFragment) / 256;
+  dataPacket[3] = (*sizeOfFragment) % 256;
   memcpy(dataPacket + 4, fileFragment, *sizeOfFragment);
   *sizeOfFragment += 4;
   writer_msg_count++;

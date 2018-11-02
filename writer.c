@@ -6,12 +6,11 @@
 int numAttempts = 0;
 int isConnected = 0;
 int openOrWrite = 0;
+
 //handles the alarm signal
 int flag = 0;
 
 int tramaInfo = 0;
-
-//main function called after choosing sender/receiver
 
 int llwriteW(int fd, unsigned char *packetsFromCtrl, int sizeOfTrama)
 {

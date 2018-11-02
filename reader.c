@@ -2,25 +2,19 @@
 #include "data_link.h"
 #include "stateMachine.h"
 #include "application_layer.h"
-/*
 
-*/
 
 int checkBCC2(unsigned char *packet, int size)
 {
 	int i;
 	unsigned char byte = packet[0];
-	static int contador = 1;
 	
 	for (i = 1; i < size - 1; i++)
 	{
 		byte = byte ^ packet[i];
 	}
-	printf("%d BCC2: %x\n",contador,byte);
-	printf("Expected: %x\n",packet[size-1]);
 	if (byte == packet[size - 1])
 	{
-		contador++;
 		return 1;
 	}
 	else
@@ -112,7 +106,7 @@ unsigned char *llread(int fd, unsigned long *size)
 			}
 			break;
 		case 5:
-			//BYTE DE-STUFFING
+			//Byte de-stuffing
 			if (c == ESCAPE_FLAG1)
 			{
 				frame = (unsigned char *)realloc(frame, ++(*size));
@@ -141,6 +135,8 @@ unsigned char *llread(int fd, unsigned long *size)
 	//app_layer.size=*size;
 	printf("Trama num: %d\n", tramaNum);
 	printf("Esperado: %d\n", expectedBCC);
+	
+	//Enviar a resposta
 	if (bccCheckedData)
 	{
 		if (tramaNum == expectedBCC)
@@ -162,15 +158,14 @@ unsigned char *llread(int fd, unsigned long *size)
 		}
 	}
 	else{
-		printf("ERROR: Message rejected\n");
+		printf("ERROR: Message rejected, invalid BCC\n");
 		*size = 0;
 		if (tramaNum == 0)
 			sendControlField(fd, REJ1);
 		else
 			sendControlField(fd, REJ0);
 	}
-		
-	//printf("current size : %lu\n", size);
+	
 	return frame;
 }
 
@@ -207,10 +202,9 @@ int llopenR(int porta, int status)
 	}
 	if (link_layer.status)
 	{ //RECETOR
-		//TODO UA protocol
-		//le o set
+
 		while (curr_level < 5)
-		{ /* loop for input */
+		{  
 			res = read(fd, buf, 1);
 			if (res > 0)
 			{
@@ -243,7 +237,7 @@ void llcloseR(int fd){
 	sendControlField(fd, DISC);
 	printf("Sent DISC\n");
 	readControlMessageR(fd, UA);
-	printf("Received UA");
+	printf("Received UA\n");
 
 	tcsetattr(fd, TCSANOW, &link_layer.oldPortSettings);
 }
