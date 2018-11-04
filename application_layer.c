@@ -37,7 +37,26 @@ int main(int argc, char **argv)
     return -1;
   }
 
-  link_layer.baudRate = BAUDRATE;
+  int bd_input;
+  printf("Choose a Baudrate: \n"
+          "1 - B1200\n"
+          "2 - B2400\n"
+          "3 - B4800\n"
+          "4 - B19200\n"
+          "5 - B38400\n"
+          "6 - B115200\n"
+          "Value: ");
+  scanf("%d", &bd_input);
+
+  if(bd_input > 6 || bd_input < 1){
+    perror("Valor invalido! \n");
+    return -1;
+  }        
+
+  unsigned long bd_array[] = {B1200, B2400, B4800, B19200, B38400, B115200};
+  link_layer.baudRate = bd_array[bd_input - 1];
+
+
 
   (void)signal(SIGALRM, timeout);
   if (!strcmp(argv[2], "S"))
