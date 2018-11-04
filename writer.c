@@ -254,9 +254,10 @@ void llcloseW(int fd){
   }
 
   printf("Received DISC\n");
-  sleep(1);
+  //sleep(1);
   sendControlField(fd, uaC);
   printf("Last UA sent\n");
+  sleep(1);
 
   if(tcsetattr(fd, TCSANOW, &link_layer.oldPortSettings) == -1){
     perror("tcsetattr");
