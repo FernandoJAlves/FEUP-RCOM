@@ -49,12 +49,32 @@ int main(int argc, char **argv)
   scanf("%d", &bd_input);
 
   if(bd_input > 6 || bd_input < 1){
-    perror("Valor invalido! \n");
+    perror("Valor invalido! ");
     return -1;
   }        
 
   unsigned long bd_array[] = {B1200, B2400, B4800, B19200, B38400, B115200};
   link_layer.baudRate = bd_array[bd_input - 1];
+
+
+  int ps_input;
+  printf("Choose a Packet Size: \n"
+          "1 - 32\n"
+          "2 - 64\n"
+          "3 - 128\n"
+          "4 - 256\n"
+          "5 - 512\n"
+          "6 - 1024\n"
+          "Value: ");
+  scanf("%d", &ps_input);
+
+  if(ps_input > 6 || ps_input < 1){
+    perror("Valor invalido! ");
+    return -1;
+  }        
+
+  unsigned int ps_array[] = {32, 64, 128, 256, 512, 1024};
+  app_layer.size = ps_array[ps_input - 1];
 
 
 
@@ -98,11 +118,11 @@ void data_writer(int argc, char *argv[])
 
   initCounter();
   llwriteW(fd, pointerToCtrlPacket, controlPacketSize);
-  int packetSize = PACKET_SIZE;
+  int packetSize = app_layer.size;
   long int curr_index = 0;
   unsigned long progress = 0;
 
-  while (curr_index < fileSize && packetSize == PACKET_SIZE)
+  while (curr_index < fileSize && packetSize == app_layer.size)
   {
 
     //get a piece of the file, then add the header, then send
