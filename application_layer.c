@@ -36,6 +36,9 @@ int main(int argc, char **argv)
     perror("porta 1 ou 2 \n");
     return -1;
   }
+
+  link_layer.baudRate = BAUDRATE;
+
   (void)signal(SIGALRM, timeout);
   if (!strcmp(argv[2], "S"))
   {

@@ -11,7 +11,7 @@ int setTermios(int fd){
   }
   link_layer.oldPortSettings=oldtio;
   bzero(&newtio, sizeof(newtio));
-  newtio.c_cflag = BAUDRATE | CS8 | CLOCAL | CREAD;
+  newtio.c_cflag = link_layer.baudRate | CS8 | CLOCAL | CREAD;
   newtio.c_iflag = IGNPAR;
   newtio.c_oflag = 0;
 
