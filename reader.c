@@ -151,10 +151,12 @@ unsigned char *llread(int fd, unsigned long *size)
 		else{
 			printf("ERROR: Expected %x, but trama was %x\n", expectedBCC, tramaNum);
 			*size = 0;
+			
 			if (tramaNum == 0)
-				sendControlField(fd, REJ1);
+				sendControlField(fd, RR1);
 			else
-				sendControlField(fd, REJ0);
+				sendControlField(fd, RR0);
+				
 		}
 	}
 	else{
