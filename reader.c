@@ -29,6 +29,7 @@ unsigned char *llread(int fd, unsigned long *size)
 	unsigned char c;
 	unsigned char *frame = (unsigned char *)malloc(0);
 	int bccCheckedData = 0;
+	int destuffingError = 0;
 	while (curr_state < 6)
 	{
 		read(fd, &c, 1);
@@ -121,8 +122,8 @@ unsigned char *llread(int fd, unsigned long *size)
 				}
 				else
 				{
-					perror("Non valid character after escape character");
-					exit(-1);
+					printf("Non valid character after escape character\n");
+					destuffingError = 1;
 				}
 			}
 			curr_state = 4;
@@ -137,7 +138,7 @@ unsigned char *llread(int fd, unsigned long *size)
 	printf("Esperado: %d\n", expectedBCC);
 	
 	//Enviar a resposta
-	if (bccCheckedData)
+	if (bccCheckedData && !destuffingError)
 	{
 		if (tramaNum == expectedBCC)
 		{
@@ -145,7 +146,7 @@ unsigned char *llread(int fd, unsigned long *size)
 				sendControlField(fd, RR1);
 			else
 				sendControlField(fd, RR0);
-			printf("Enviou RR%d\n", tramaNum);	
+			printf("Enviou RR%d\n", !tramaNum);	
 			expectedBCC = (expectedBCC+1)%2;
 		}
 		else{
@@ -160,7 +161,9 @@ unsigned char *llread(int fd, unsigned long *size)
 		}
 	}
 	else{
-		printf("ERROR: Message rejected, invalid BCC\n");
+		if(!bccCheckedData){
+			printf("ERROR: Message rejected, invalid BCC\n");
+		}
 		*size = 0;
 		if (tramaNum == 0)
 			sendControlField(fd, REJ1);

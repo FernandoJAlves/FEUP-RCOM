@@ -9,7 +9,7 @@
 #include "reader.h"
 #include "utilities.h"
 
-unsigned int writer_msg_count = 0;
+unsigned int msg_count = 0;
 
 int main(int argc, char **argv)
 {
@@ -136,10 +136,10 @@ void data_writer(int argc, char *argv[])
     progress = (unsigned long)(((double)curr_index/(double)fileSize)*100);
     printf("\n===============\n");
     printf("Progress: %lu%%\n", progress);
-    
+
     llwriteW(fd, packet_and_header, packetHeaderSize);
 
-    printf("Received packet number: %d\n", writer_msg_count);
+    printf("Sent packet number: %d\n", msg_count);
     free(packet_and_header);
   }
 
@@ -191,24 +191,29 @@ void data_reader(int argc, char *argv[])
     printf("\n================\n");
     dataPacket = llread(fd, &size);
     fileSize += size;
-    progress = 100*(((double)index) / ((double) totalSize));
-    printf("Progress: %d%%\n",progress);
     if (size == 0)
     {
       continue;
     }
     if (dataPacket[0] == CTRL_C_END)
     {
+      printf("Control Packet END received\n");
       reading = 0;
+      free(dataPacket);
       break;
     }
+    msg_count++;
+    printf("Received packet number: %d\n", msg_count);
     //remove headers
     dataPacket = removeHeaders(dataPacket, &size);
     finalFile = (unsigned char *)realloc(finalFile,fileSize);
     memcpy(finalFile + index, dataPacket, size);
     index += size;
+    progress = 100*(((double)index) / ((double) totalSize));
+    printf("Progress: %d%%\n",progress);
     free(dataPacket);
   }
+  printf("\n===============\n");
   printf("Size of received file:  %lu\n", index);
   //fileName[0] = 'c';
   createFile(finalFile, &index, fileName);
@@ -325,13 +330,12 @@ unsigned char *makePacketHeader(unsigned char *fileFragment, long int fileSize, 
   unsigned char *dataPacket = (unsigned char *)malloc((*sizeOfFragment) + 4);
 
   dataPacket[0] = PACKET_H_C;
-  dataPacket[1] = writer_msg_count % 255;
+  dataPacket[1] = msg_count % 255;
   dataPacket[2] = (*sizeOfFragment) / 256;
   dataPacket[3] = (*sizeOfFragment) % 256;
   memcpy(dataPacket + 4, fileFragment, *sizeOfFragment);
   *sizeOfFragment += 4;
-  writer_msg_count++;
-  //TODO ?
+  msg_count++;
   return dataPacket;
 }
 
