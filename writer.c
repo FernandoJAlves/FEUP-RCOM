@@ -121,8 +121,8 @@ int llwriteW(int fd, unsigned char *packetsFromCtrl, int sizeOfTrama)
     else{
       printf("Invalid data received!\n");
     }
-    numAttempts++;
-    printf("Reattempt number: %d\n",numAttempts);
+    //numAttempts++;
+    //printf("Reattempt number: %d\n",numAttempts);
   }while (((!isConnected) && (numAttempts < MAXATTEMPTS)) || rej);
   printf("Transfer Rate: %.1f Kb/s\n",getTransferRate(sizeOfTrama));
   return 1;
