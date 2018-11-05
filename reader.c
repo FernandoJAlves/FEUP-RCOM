@@ -4,23 +4,6 @@
 #include "application_layer.h"
 
 
-int checkBCC2(unsigned char *packet, int size)
-{
-	int i;
-	unsigned char byte = packet[0];
-	
-	for (i = 1; i < size - 1; i++)
-	{
-		byte = byte ^ packet[i];
-	}
-	if (byte == packet[size - 1])
-	{
-		return 1;
-	}
-	else
-		return 0;
-}
-
 unsigned char *llread(int fd, unsigned long *size)
 {
 	int curr_state = 0;
@@ -89,11 +72,13 @@ unsigned char *llread(int fd, unsigned long *size)
 				{
 					curr_state = 6;
 					bccCheckedData = 1;
+					//valid bcc2
 				}
 				else
 				{
 					curr_state = 6;
 					bccCheckedData = 0;
+					//invalid bcc2
 				}
 			}
 			else if (c == ESCAPEBYTE)
@@ -124,6 +109,7 @@ unsigned char *llread(int fd, unsigned long *size)
 				{
 					printf("Non valid character after escape character\n");
 					destuffingError = 1;
+					//Invalid value after destuffing (caused by physical interference)
 				}
 			}
 			curr_state = 4;
@@ -131,13 +117,12 @@ unsigned char *llread(int fd, unsigned long *size)
 		}
 	}
 	frame = (unsigned char *)realloc(frame, *size-1);
-
 	*size = *size - 1;
-	//app_layer.size=*size;
+
 	printf("Trama num: %d\n", tramaNum);
 	printf("Esperado: %d\n", expectedBCC);
 	
-	//Enviar a resposta
+	//Enviar a resposta apropriada
 	if (bccCheckedData && !destuffingError)
 	{
 		if (tramaNum == expectedBCC)
@@ -237,6 +222,7 @@ void llcloseR(int fd){
 	UA[2] = uaC;
 	UA[3] = UA[1] ^ UA[2];
 	UA[4] = FLAG;
+	
 	readControlMessageR(fd,DISCr);
 	printf("Received DISC\n");
 	sendControlField(fd, DISC);
@@ -247,6 +233,20 @@ void llcloseR(int fd){
 	tcsetattr(fd, TCSANOW, &link_layer.oldPortSettings);
 }
 
-void readC(int fd, int controlMsg){
-
+int checkBCC2(unsigned char *packet, int size)
+{
+	int i;
+	unsigned char byte = packet[0];
+	
+	for (i = 1; i < size - 1; i++)
+	{
+		byte = byte ^ packet[i];
+	}
+	if (byte == packet[size - 1])
+	{
+		return 1;
+	}
+	else
+		return 0;
 }
+

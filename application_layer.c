@@ -98,6 +98,7 @@ int main(int argc, char **argv)
   return 0;
 }
 
+
 //main function called after choosing sender
 void data_writer(int argc, char *argv[])
 {
@@ -130,8 +131,6 @@ void data_writer(int argc, char *argv[])
 
     int packetHeaderSize = packetSize;
     unsigned char *packet_and_header = makePacketHeader(packet, fileSize, &packetHeaderSize);
-
-    //TODO - Testar se o llwriteW falhou
     
     progress = (unsigned long)(((double)curr_index/(double)fileSize)*100);
     printf("\n===============\n");
@@ -157,6 +156,7 @@ void data_writer(int argc, char *argv[])
   llcloseW(fd);
 }
 
+
 //main function called after choosing receiver
 void data_reader(int argc, char *argv[])
 {
@@ -164,25 +164,22 @@ void data_reader(int argc, char *argv[])
   int fd = llopenR(1, 2);
   unsigned long size = 0;
   expectedBCC = 0;
+  int start_size;
   
   char * fileName = (char*)malloc(0);
   int fileSizeBytes = 0;
   int fileNameSize = 0;
   unsigned long totalSize = 0;
   
-  
   unsigned char *startPacket = llread(fd, &size);
   getStartPacketData(startPacket,&totalSize,&fileSizeBytes,&fileNameSize,fileName);
-  
-  
-  
-  free(startPacket);
+  start_size = size;
+
   unsigned char *dataPacket;
   unsigned char *finalFile = malloc(0);
   off_t index = 0;
   unsigned long fileSize = 0;
 
- 
   int progress;
 
   while (reading)
@@ -199,26 +196,39 @@ void data_reader(int argc, char *argv[])
     {
       printf("Control Packet END received\n");
       reading = 0;
-      free(dataPacket);
       break;
     }
     msg_count++;
     printf("Received packet number: %d\n", msg_count);
+
     //remove headers
     dataPacket = removeHeaders(dataPacket, &size);
+
     finalFile = (unsigned char *)realloc(finalFile,fileSize);
     memcpy(finalFile + index, dataPacket, size);
     index += size;
+
     progress = 100*(((double)index) / ((double) totalSize));
     printf("Progress: %d%%\n",progress);
     free(dataPacket);
   }
+
+  if(!receivedEND(startPacket, start_size, dataPacket, size)){
+    printf("Start and End packets do not match\n");
+    exit(-1);
+  }
+
   printf("\n===============\n");
   printf("Size of received file:  %lu\n", index);
-  //fileName[0] = 'c';
+
+  //fileName[0] = 'c'; //to have diferent names
+
   createFile(finalFile, &index, fileName);
   free(finalFile);
   free(fileName);
+  free(startPacket);
+  free(dataPacket);
+
   llcloseR(fd);
 }
 

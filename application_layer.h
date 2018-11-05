@@ -10,7 +10,6 @@ int size;
 applicationLayer app_layer;
 
 #define PACKET_H_C      1       //Value of packet header Control
-//#define PACKET_SIZE     256     //Size you send each iteration
 
 //  WRITER FUNCTIONS
 
@@ -21,10 +20,15 @@ void data_writer(int argc, char * argv[]);
 unsigned char * makePacketHeader(unsigned char * fileFragment, long int fileSize, int * sizeOfFragment);
 unsigned char * splitFile(unsigned char * file, long int * curr_index, int * packetSize, long int fileSize);
 void createFile(unsigned char *mensagem, off_t *sizeFile, char * filename);
+
 //  READER FUNCTIONS
 
 void data_reader(int argc, char * argv[]);
 unsigned char * removeHeaders(unsigned char * packetWithHeader,unsigned long * sizeWithHeaders);
 void getStartPacketData(unsigned char * packet,unsigned long * fileSize,int * fileSizeBytes,int * fileNameSize, char * fileName);
+
+//Verification functions
+
+int receivedEND(unsigned char *start, int sizeStart, unsigned char *end, int sizeEnd);
 
 #endif

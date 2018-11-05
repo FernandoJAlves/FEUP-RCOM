@@ -12,7 +12,7 @@
 
 int stateMachine(unsigned char c, int curr_state, unsigned char arg[])
 {
-  
+  //state machine for SET/UA 
   switch (curr_state)
   {
   case 0:
@@ -160,6 +160,7 @@ unsigned char readControlMessageW(int fd,unsigned char * ctrl)
 
 unsigned char readControlMessageR(int fd,unsigned char * ctrl)
 {
+  //reads DISC/UA in reader
   int curr_state = 0;
   unsigned char c;
   while (curr_state != 5)

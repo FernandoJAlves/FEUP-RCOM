@@ -22,11 +22,13 @@ unsigned char * llread(int fd, unsigned long  * size);
 
 void llcloseR(int fd);
 
+int checkBCC2(unsigned char *packet, int size);
+
+// Global variables
 
 int fd;
 int expectedBCC;
 
-//      Application Layer Functions
 
 
 

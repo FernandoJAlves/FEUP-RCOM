@@ -14,11 +14,10 @@ int tramaInfo = 0;
 
 int llwriteW(int fd, unsigned char *packetsFromCtrl, int sizeOfTrama)
 {
-  startCounter();
+  startCounter(); //Counter for elapsed time
   numAttempts = 0;
   isConnected = 0;
   flag = 1;
-  //unsigned char * BCC2s = (unsigned char *)malloc(sizeof(unsigned char));
   finalMessage = (unsigned char *)malloc((sizeOfTrama + 6) * sizeof(unsigned char));
   finalSize = sizeOfTrama + 6;
   finalMessage[0] = FLAG;
@@ -56,7 +55,7 @@ int llwriteW(int fd, unsigned char *packetsFromCtrl, int sizeOfTrama)
         j += 2;
       }
       else
-      { // dados
+      { // data that does not need stuffing
         finalMessage[j] = packetsFromCtrl[numOfTramas];
         j++;
       }
@@ -91,10 +90,12 @@ int llwriteW(int fd, unsigned char *packetsFromCtrl, int sizeOfTrama)
     RRv[2]=RR0; //not used
     RRv[3]=RRv[1]^RRv[2]; //not used
     RRv[4]=FLAG; //not used
+
     alarm(3);
+
     unsigned char C = readControlMessageW(fd,RRv);
     
-    if ((C == RR0 && tramaInfo == 1) || (C == RR1 && tramaInfo == 0))
+    if ((C == RR0 && tramaInfo == 1) || (C == RR1 && tramaInfo == 0)) //successful
     {
       rej = 0;
       numAttempts = 0;
@@ -108,7 +109,7 @@ int llwriteW(int fd, unsigned char *packetsFromCtrl, int sizeOfTrama)
 
       break;
     }
-    else if ((C == REJ0) || (C == REJ1))
+    else if ((C == REJ0) || (C == REJ1)) //rejected
     {
       rej = 1;
       if(C == REJ0){
@@ -118,11 +119,9 @@ int llwriteW(int fd, unsigned char *packetsFromCtrl, int sizeOfTrama)
         printf("REJ1 received\n");
       }
     }
-    else{
+    else{ //unexpected return message
       printf("Invalid data received!\n");
     }
-    //numAttempts++;
-    //printf("Reattempt number: %d\n",numAttempts);
   }while (((!isConnected) && (numAttempts < MAXATTEMPTS)) || rej);
   printf("Transfer Rate: %.1f Kb/s\n",getTransferRate(sizeOfTrama));
   return 1;
@@ -141,6 +140,7 @@ unsigned char getBCC2(unsigned char *mensagem, int size)
 
 unsigned char *stuffing(unsigned char buff, int *size)
 {
+  //stuffing of BCC2
   unsigned char *returnValue;
   returnValue = (unsigned char *)malloc(2 * sizeof(unsigned char *));
 
@@ -226,6 +226,7 @@ void callAlarm()
 }
 void timeout()
 {
+  //alarm handler
   numAttempts++;
   
   if(numAttempts > MAXATTEMPTS){
