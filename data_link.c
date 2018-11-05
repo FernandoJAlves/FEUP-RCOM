@@ -19,7 +19,7 @@ int setTermios(int fd){
   newtio.c_lflag = 0;
 
   newtio.c_cc[VTIME]    = 0;   /* inter-character timer unused */
-  newtio.c_cc[VMIN]     = 1;   /* blocking read until 5 chars received */
+  newtio.c_cc[VMIN]     = 1;   /* blocking read until 1 char received */
 /*
   VTIME e VMIN devem ser alterados de forma a proteger com um temporizador a
   leitura do(s) pr�ximo(s) caracter(es)

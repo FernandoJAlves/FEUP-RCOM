@@ -84,6 +84,7 @@ int llwriteW(int fd, unsigned char *packetsFromCtrl, int sizeOfTrama)
 
   do{
     write(fd, finalMessage, finalSize);    
+    
     RRv[0]=FLAG;
     RRv[1]=Aemiss;
      

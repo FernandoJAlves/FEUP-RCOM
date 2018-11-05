@@ -1,7 +1,7 @@
 #ifndef MACROS_H_
 #define MACROS_H_
 
-#define MAXATTEMPTS 3
+#define MAXATTEMPTS 6
 
 #define FLAG 0x07E
 #define Aemiss 0x03
