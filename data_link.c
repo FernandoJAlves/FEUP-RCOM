@@ -47,3 +47,7 @@ int sendControlField(int fd, unsigned char controlField)
 	int bytes = write(fd, controlPacket, 5);
 	return bytes;
 }
+
+void set_n_wrong_packets(int n){
+  link_layer.n_wrong_packets = BER * n;
+}

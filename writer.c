@@ -63,26 +63,29 @@ int llwriteW(int fd, unsigned char *packetsFromCtrl, int sizeOfTrama)
   }
 
   int sizeBCC2 = 1;
-  unsigned char *BCC2Stuffed;
-  unsigned char BCC2 = getBCC2(packetsFromCtrl, sizeOfTrama);
-  BCC2Stuffed = stuffing(BCC2, &sizeBCC2);
-  if (sizeBCC2 == 1){
-    finalMessage[j] = BCC2; //bcc ok
-    //printf("BCC2 normal\n");
-  }
 
-  else
-  {
-    finalMessage = (unsigned char *)realloc(finalMessage, ++finalSize);
-    finalMessage[j] = BCC2Stuffed[0];
-    finalMessage[j + 1] = BCC2Stuffed[1]; //
-    j++;
-    //printf("BCC2 stuffed\n");
-  }
-  finalMessage[j + 1] = FLAG;
   int rej = 0;
 
   do{
+    
+    unsigned char *BCC2Stuffed;
+    unsigned char BCC2 = getBCC2(packetsFromCtrl, sizeOfTrama);
+    BCC2Stuffed = stuffing(BCC2, &sizeBCC2);
+    if (sizeBCC2 == 1){
+      finalMessage[j] = BCC2; //bcc ok
+      //printf("BCC2 normal\n");
+    }
+
+    else
+    {
+      finalMessage = (unsigned char *)realloc(finalMessage, ++finalSize);
+      finalMessage[j] = BCC2Stuffed[0];
+      finalMessage[j + 1] = BCC2Stuffed[1]; //
+      j++;
+      //printf("BCC2 stuffed\n");
+    }
+    finalMessage[j + 1] = FLAG;
+    
     write(fd, finalMessage, finalSize);    
     
     RRv[0]=FLAG;
@@ -135,6 +138,10 @@ unsigned char getBCC2(unsigned char *mensagem, int size)
   for (i = 1; i < size; i++)
   {
     BCC2 ^= mensagem[i];
+  }
+  if(link_layer.n_wrong_packets > 0){
+    link_layer.n_wrong_packets--;
+    BCC2 = 0;
   }
   return BCC2;
 }

@@ -15,6 +15,7 @@
 #define RECEIVER 1
 #define COM_1 "/dev/ttyS0"
 #define COM_2 "/dev/ttyS1"
+#define BER 0.9
 
 typedef struct{
     char * port; /*Dispositivo /dev/ttySx, x = 0, 1*/
@@ -24,6 +25,7 @@ typedef struct{
     unsigned int numTransmissions; /*Número de tentativas em caso de falha*/
     int status;
     struct termios oldPortSettings;
+    int n_wrong_packets;
 } LinkLayer;
 LinkLayer link_layer;
 
@@ -31,7 +33,7 @@ int setTermios(int fd);
 
 int sendControlField(int fd, unsigned char controlField);
 
-
+void set_n_wrong_packets(int n);
 
 
 

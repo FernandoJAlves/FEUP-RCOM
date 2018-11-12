@@ -122,6 +122,7 @@ void data_writer(int argc, char *argv[])
   int packetSize = app_layer.size;
   long int curr_index = 0;
   unsigned long progress = 0;
+  set_n_wrong_packets(fileSize/packetSize);
 
   while (curr_index < fileSize && packetSize == app_layer.size)
   {
