@@ -74,7 +74,22 @@ void parseInputString(char *input, char *user, char *password, char *host, char 
 }
 
 
+void parseFile(char *url_path, int url_path_size, char *filename){
+	
+	int curr_index = 0;
 
+	for(int i = 0; i < url_path_size; i++){
+
+		if(url_path[i] == '/'){ // current filename is a directory, reset and start again
+			curr_index = 0;
+			memset(filename, 0, MAX_STRING_SIZE);
+		}
+		else{
+			filename[curr_index] = url_path[i];
+			curr_index++;
+		}
+	}
+}
 
 
 
@@ -101,10 +116,17 @@ int main(int argc, char** argv){
 
     parseInputString(argv[1], user, password, host, url_path);
 
-    printf("%s\n", user);
-    printf("%s\n", password);
-    printf("%s\n", host);
-    printf("%s\n", url_path);
+    char* filename = (char*) calloc(MAX_STRING_SIZE, sizeof(char));
+
+    parseFile(url_path, strlen(url_path), filename);
+
+    //Testing the values
+    printf("User: %s\n", user);
+    printf("Password: %s\n", password);
+    printf("Host: %s\n", host);
+    printf("URL Path: %s\n", url_path);
+    printf("File name: %s\n", filename);
+
 
 
 
