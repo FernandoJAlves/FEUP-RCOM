@@ -125,7 +125,7 @@ void getip(char* host, struct hostent *h)
     }
 
     printf("Host name  : %s\n", h->h_name);
-    printf("IP Address : %s\n",inet_ntoa(*((struct in_addr *)h->h_addr)));
+    printf("IP Address : %s\n\n",inet_ntoa(*((struct in_addr *)h->h_addr)));
 }
 
 
@@ -136,6 +136,8 @@ int main(int argc, char** argv){
 
     /*Steps:
         1 - parse input
+        2 - obter IP
+        3 - criar socket TCP
 
 
     */
@@ -158,9 +160,13 @@ int main(int argc, char** argv){
     printf("URL Path: %s\n", url_path);
     printf("File name: %s\n\n", filename);
 
-    struct hostent h;
+    struct hostent * h;
 
-    getip(host, &h);
+    getip(host, h);
+
+
+
+
 
 
     // Freeing variables
@@ -172,5 +178,4 @@ int main(int argc, char** argv){
     
     return 0;
 }
-
 
