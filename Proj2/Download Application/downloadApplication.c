@@ -3,6 +3,13 @@
 #include <stdlib.h>
 #include <strings.h>
 
+//Includes getip.c
+#include <errno.h> 
+#include <netdb.h> 
+#include <sys/types.h>
+#include <netinet/in.h> 
+#include <arpa/inet.h>
+
 #define MAX_STRING_SIZE     128
 
 // Example of input: ./run ftp://[<user>:<password>@]<host>/<url-path>
@@ -93,12 +100,22 @@ void parseFile(char *url_path, int url_path_size, char *filename){
 
 
 
+// Codigo fornecido
 
 
+void getip(char* host, struct hostent *h)
+{
+    if ((h = gethostbyname(host)) == NULL) {  
+        herror("gethostbyname");
+        exit(1);
+    }
+
+    printf("Host name  : %s\n", h->h_name);
+    printf("IP Address : %s\n",inet_ntoa(*((struct in_addr *)h->h_addr)));
+}
 
 
-
-
+// Fim de Codigo fornecido
 
 
 int main(int argc, char** argv){
@@ -120,16 +137,16 @@ int main(int argc, char** argv){
 
     parseFile(url_path, strlen(url_path), filename);
 
-    //Testing the values
-    printf("User: %s\n", user);
+    //Testing the values -> Tested and works fine
+    printf("\nUser: %s\n", user);
     printf("Password: %s\n", password);
     printf("Host: %s\n", host);
     printf("URL Path: %s\n", url_path);
-    printf("File name: %s\n", filename);
+    printf("File name: %s\n\n", filename);
 
+    struct hostent h;
 
-
-
+    getip(host, &h);
 
 
     // Freeing variables
