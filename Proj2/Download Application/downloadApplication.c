@@ -13,6 +13,8 @@
 #include <signal.h>
 #include <strings.h>
 
+#include <ctype.h>
+
 #define MAX_STRING_SIZE     128
 #define SERVER_PORT 		21
 
@@ -130,6 +132,22 @@ struct hostent* getip(char* host)
 
 
 
+void readServerAws(int sockfd, char *responseCode)
+{
+	int curr_state = 0;
+	int i = 0;
+	char c;
+
+	while (curr_state != 3)
+	{	
+		read(sockfd, &c, 1);
+		printf("%c", c);
+		//TODO
+	}
+}
+
+
+
 
 
 int main(int argc, char** argv){
@@ -190,9 +208,14 @@ int main(int argc, char** argv){
 		exit(0);
 	}
 
-    /*send a string to the server*/
+    /*send a string to the server   -   unnecessary to the project
 	bytes = write(sockfd, buf, strlen(buf));
 	printf("Bytes escritos %d\n", bytes);
+	*/ 
+
+	char responseCode[3];
+
+	readServerAws(sockfd, responseCode);
 
 
 
