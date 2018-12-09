@@ -10,7 +10,7 @@
 #include <signal.h>
 #include <netdb.h>
 #include <strings.h>
-#include <string.h>
+//#include <string.h>
 
 #define SERVER_PORT 6000
 #define SERVER_ADDR "192.168.28.96"

@@ -13,8 +13,7 @@
 #define MAX_STRING_SIZE     128
 
 // Example of input: ./run ftp://[<user>:<password>@]<host>/<url-path>
-void parseInputString(char *input, char *user, char *password, char *host, char *url_path)
-{
+void parseInputString(char *input, char *user, char *password, char *host, char *url_path){
 	
 	int curr_index = 0;
 	int i = 0;
@@ -43,6 +42,13 @@ void parseInputString(char *input, char *user, char *password, char *host, char 
 				curr_state = 2;
 				curr_index = 0;
 			}
+            else if(input[i] == '/'){ //no user, copy to host
+                curr_state = 4;
+				curr_index = 0;
+                for(int i = 0; i < strlen(user); i++)
+                    host[i] = user[i];
+                memset(user, 0, MAX_STRING_SIZE);
+            }
 			else{ //still reading user
 				user[curr_index] = input[i];
 				curr_index++;
@@ -54,6 +60,13 @@ void parseInputString(char *input, char *user, char *password, char *host, char 
 				curr_state = 3;
 				curr_index = 0;
 			}
+            else if(input[i] == '/'){ //no password, copy to host
+                curr_state = 4;
+				curr_index = 0;
+                for(int i = 0; i < strlen(user); i++)
+                    host[i] = password[i];
+                memset(password, 0, MAX_STRING_SIZE);
+            }
 			else{ // still reading password
 				password[curr_index] = input[i];
 				curr_index++;
@@ -80,7 +93,6 @@ void parseInputString(char *input, char *user, char *password, char *host, char 
 
 }
 
-
 void parseFile(char *url_path, int url_path_size, char *filename){
 	
 	int curr_index = 0;
@@ -97,6 +109,8 @@ void parseFile(char *url_path, int url_path_size, char *filename){
 		}
 	}
 }
+
+
 
 
 
