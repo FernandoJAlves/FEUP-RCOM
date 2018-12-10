@@ -134,17 +134,87 @@ struct hostent* getip(char* host)
 
 void readServerAws(int sockfd, char *responseCode)
 {
-	int curr_state = 0;
-	int i = 0;
-	char c;
+	//TODO
+	
+	sleep(1);
+	char input[500];
+	
+	int i = read(sockfd,&input,500);
 
-	while (curr_state != 3)
-	{	
-		read(sockfd, &c, 1);
-		printf("%c", c);
-		//TODO
+	input[i] = '\0';
+
+	printf("%s",input);
+
+/*
+	read(sockfd, code, 3);
+
+	if(!strcmp(code, "220")){
+		
+		printf("%s",code);
+
+		do{
+			read(sockfd,&c,1);
+			printf("%c",c);
+		}while (c!='\n');
 	}
+	*/
+
 }
+
+void readMessage(int sockfd, char* serverAnswer){
+
+	char answer[256];
+	int i = read(sockfd,answer,256);
+	answer[i] = '\0';
+	strcpy(serverAnswer,answer);
+}
+
+void sendUserPass(int sockfd, char* user, char* password){
+
+	char serverAnswer[256];
+
+	//User
+	char * messageU = calloc(strlen(user)+6, sizeof(char));
+	sprintf(messageU, "user %s\n", user);
+
+	write(sockfd, messageU, strlen(messageU));
+
+	//Read answer
+	readMessage(sockfd, serverAnswer);
+	printf("%s",serverAnswer);
+	memset(serverAnswer,0,256*sizeof(char));
+
+	//Pass
+	char * messageP = calloc(strlen(password)+6, sizeof(char));
+	sprintf(messageP, "pass %s\n", password);
+
+	write(sockfd, messageP, strlen(messageP));
+
+	//Read answer
+	readMessage(sockfd, serverAnswer);
+	printf("%s",serverAnswer);
+	memset(serverAnswer,0,256*sizeof(char));
+
+
+	free(messageU);
+	free(messageP);
+}
+
+
+void enterPassMode(int sockfd, char* array){
+
+	char serverAnswer[256];
+
+	//Set passive mode
+	write(sockfd, "pasv\n", 5);
+
+	//Read answer
+	readMessage(sockfd, serverAnswer);
+	printf("%s",serverAnswer);
+	memset(serverAnswer,0,256*sizeof(char));
+
+}
+
 
 
 
@@ -190,6 +260,8 @@ int main(int argc, char** argv){
 	char buf[] = "Mensagem de teste na travessia da pilha TCP/IP\n";  
 	int	bytes;
 
+	//Janela A
+
 	/*server address handling*/
 	bzero((char*)&server_addr,sizeof(server_addr));
 	server_addr.sin_family = AF_INET;
@@ -208,19 +280,24 @@ int main(int argc, char** argv){
 		exit(0);
 	}
 
-    /*send a string to the server   -   unnecessary to the project
-	bytes = write(sockfd, buf, strlen(buf));
-	printf("Bytes escritos %d\n", bytes);
-	*/ 
-
 	char responseCode[3];
-
 	readServerAws(sockfd, responseCode);
+
+	//Send the user and password
+	sendUserPass(sockfd, user, password);
+
+	//Enter passive mode
+	char array[6];
+	enterPassMode(sockfd, array);
+
+
+	
+	//Janela B
+
 
 
 
     // Freeing variables
-
     free(user);
     free(password);
     free(host);
