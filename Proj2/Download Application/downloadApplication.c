@@ -201,9 +201,7 @@ void sendUserPass(int sockfd, char* user, char* password){
 }
 
 
-void enterPassMode(int sockfd, char* array){
-
-	char serverAnswer[256];
+void enterPassiveMode(int sockfd, char* serverAnswer){
 
 	//Set passive mode
 	write(sockfd, "pasv\n", 5);
@@ -211,12 +209,60 @@ void enterPassMode(int sockfd, char* array){
 	//Read answer
 	readMessage(sockfd, serverAnswer);
 	printf("%s",serverAnswer);
-	memset(serverAnswer,0,256*sizeof(char));
-
+	
 }
 
 
+void extractInfoPassive(char * input, int * port){
 
+	char values[64];
+	memset(values, 0,64*sizeof(char));
+
+	strncpy(values, input + 27*sizeof(char), strlen(input) - 27 - 3); //copiar os 6 bytes mandados pelo passive mode
+
+	//printf("%s\n", values);
+
+	//printf("String2 size: %d\n", strlen(values));
+
+	int commaCounter = 0;
+	int curr_index = 0;
+
+	char portV1[4];
+	char portV2[4];
+
+	for(int i = 0; i < strlen(values); i++){
+
+		char c = values[i];
+		if(c == ','){
+			if(commaCounter == 4){
+				portV1[curr_index+1] = '\0';
+			}
+			else if(commaCounter == 5){
+				portV2[curr_index+1] = '\0';
+			}
+			commaCounter++;
+			curr_index = 0;
+		}
+		else if(commaCounter == 4){
+			portV1[curr_index] = c;
+			//printf("%c", c);
+			curr_index++;
+		}
+		else if(commaCounter == 5){
+			portV2[curr_index] = c;
+			curr_index++;
+		}
+	}
+
+	int port1 = atoi(portV1);
+	int port2 = atoi(portV2);
+	*port = 256*port1 + port2;
+
+}
+
+int sendRetrAndReadResponse(int sockfd, int sockfdB, char* path, char* filename){
+	return 0;
+}
 
 
 
@@ -257,8 +303,6 @@ int main(int argc, char** argv){
 
 	int	sockfd;
 	struct	sockaddr_in server_addr;
-	char buf[] = "Mensagem de teste na travessia da pilha TCP/IP\n";  
-	int	bytes;
 
 	//Janela A
 
@@ -287,14 +331,34 @@ int main(int argc, char** argv){
 	sendUserPass(sockfd, user, password);
 
 	//Enter passive mode
-	char array[6];
-	enterPassMode(sockfd, array);
-
-
+	char array[256];
+	enterPassiveMode(sockfd, array);
+	int port;
+	extractInfoPassive(array, &port);
 	
 	//Janela B
 
+	int	sockfdB;
 
+	/*server address handling*/
+	bzero((char*)&server_addr,sizeof(server_addr));
+	server_addr.sin_family = AF_INET;
+	server_addr.sin_addr.s_addr = inet_addr(inet_ntoa(*((struct in_addr *)h->h_addr)));	/*32 bit Internet address network byte ordered*/
+	server_addr.sin_port = htons(port);		/*server TCP port must be network byte ordered */
+    
+	/*open an TCP socket*/
+	if ((sockfdB = socket(AF_INET,SOCK_STREAM,0)) < 0) {
+    	perror("socket()");
+        exit(0);
+    }
+
+	/*connect to the server*/
+    if(connect(sockfdB, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0){
+        perror("connect()");
+		exit(0);
+	}
+
+	int retVal = sendRetrAndReadResponse(sockfd, sockfdB, url_path, filename);
 
 
     // Freeing variables
@@ -302,6 +366,16 @@ int main(int argc, char** argv){
     free(password);
     free(host);
     free(url_path);
+
+	close(sockfd);
+	close(sockfdB);
+
+
+
+	if(retVal){
+		printf("Error with Retr\n");
+		return 1;
+	}
     
     return 0;
 }
