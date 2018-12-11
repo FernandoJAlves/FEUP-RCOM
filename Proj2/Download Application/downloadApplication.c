@@ -169,6 +169,24 @@ void readMessage(int sockfd, char* serverAnswer){
 	strcpy(serverAnswer,answer);
 }
 
+
+void readToFile(char* filename, int socketFD){
+	
+	char str[] = "downloads/";
+	strcat(str, filename);
+	FILE * f = fopen((char*)str, "w+");
+
+	char auxBuff[256];
+	int n;
+
+	while((n = read(socketFD, auxBuff, 256))>0){
+		fwrite(auxBuff, sizeof(char), n, f);
+	}
+
+	fclose(f);
+}
+
+
 void sendUserPass(int sockfd, char* user, char* password){
 
 	char serverAnswer[256];
@@ -260,27 +278,26 @@ void extractInfoPassive(char * input, int * port){
 
 }
 
-int sendRetrAndReadResponse(int sockfdA, int sockfdB, char* path, char* filename){
-	
-	sleep(1);
+void sendRetrAndReadResponse(int sockfdA, int sockfdB, char* path, char* filename){
 
 	//Send retr and file path
-	write(sockfdA, "retr", 4);
+	write(sockfdA, "retr ", 5);
 	write(sockfdA, path, strlen(path));
 	write(sockfdA, "\n", 1);
 
-	char c;
-
-	printf("Hi\n");
+	char ret[256];
 
 	sleep(1);
 
-	while(1){
-		read(sockfdB, &c, 1);
-		printf("%c",c);
-	}
+	int bytes = read(sockfdA, ret, 256);
+	ret[bytes] = '\0';
+
+	printf("%s",ret);
+
+	readToFile(filename, sockfdB);
 	
-	return 0;
+	printf("File created successfully!\n");
+
 }
 
 
@@ -321,7 +338,8 @@ int main(int argc, char** argv){
 	// Codigo fornecido 
 
 	int	sockfd;
-	struct	sockaddr_in server_addr;
+	struct sockaddr_in server_addr;
+	struct sockaddr_in server_addr_B;
 
 	//Janela A
 
@@ -360,10 +378,10 @@ int main(int argc, char** argv){
 	int	sockfdB;
 
 	/*server address handling*/
-	bzero((char*)&server_addr,sizeof(server_addr));
-	server_addr.sin_family = AF_INET;
-	server_addr.sin_addr.s_addr = inet_addr(inet_ntoa(*((struct in_addr *)h->h_addr)));	/*32 bit Internet address network byte ordered*/
-	server_addr.sin_port = htons(port);		/*server TCP port must be network byte ordered */
+	bzero((char*)&server_addr_B,sizeof(server_addr_B));
+	server_addr_B.sin_family = AF_INET;
+	server_addr_B.sin_addr.s_addr = inet_addr(inet_ntoa(*((struct in_addr *)h->h_addr)));	/*32 bit Internet address network byte ordered*/
+	server_addr_B.sin_port = htons(port);		/*server TCP port must be network byte ordered */
     
 	/*open an TCP socket*/
 	if ((sockfdB = socket(AF_INET,SOCK_STREAM,0)) < 0) {
@@ -372,12 +390,12 @@ int main(int argc, char** argv){
     }
 
 	/*connect to the server*/
-    if(connect(sockfdB, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0){
+    if(connect(sockfdB, (struct sockaddr *)&server_addr_B, sizeof(server_addr_B)) < 0){
         perror("connect()");
 		exit(0);
 	}
 
-	int retVal = sendRetrAndReadResponse(sockfd, sockfdB, url_path, filename);
+	sendRetrAndReadResponse(sockfd, sockfdB, url_path, filename);
 
 
     // Freeing variables
@@ -389,12 +407,6 @@ int main(int argc, char** argv){
 	close(sockfd);
 	close(sockfdB);
 
-
-
-	if(retVal){
-		printf("Error with Retr\n");
-		return 1;
-	}
     
     return 0;
 }
