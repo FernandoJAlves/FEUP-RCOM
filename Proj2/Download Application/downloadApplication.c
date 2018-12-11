@@ -260,7 +260,26 @@ void extractInfoPassive(char * input, int * port){
 
 }
 
-int sendRetrAndReadResponse(int sockfd, int sockfdB, char* path, char* filename){
+int sendRetrAndReadResponse(int sockfdA, int sockfdB, char* path, char* filename){
+	
+	sleep(1);
+
+	//Send retr and file path
+	write(sockfdA, "retr", 4);
+	write(sockfdA, path, strlen(path));
+	write(sockfdA, "\n", 1);
+
+	char c;
+
+	printf("Hi\n");
+
+	sleep(1);
+
+	while(1){
+		read(sockfdB, &c, 1);
+		printf("%c",c);
+	}
+	
 	return 0;
 }
 
