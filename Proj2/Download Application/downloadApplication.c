@@ -50,9 +50,10 @@ void parseInputString(char *input, char *user, char *password, char *host, char 
 			}
             else if(input[i] == '/'){ //no user, copy to host
                 curr_state = 4;
-				curr_index = 0;
-                for(int i = 0; i < strlen(user); i++)
-                    host[i] = user[i];
+		curr_index = 0;
+		int j;
+                for(j = 0; j < strlen(user); j++)
+                    host[j] = user[j];
                 memset(user, 0, MAX_STRING_SIZE);
             }
 			else{ //still reading user
@@ -68,9 +69,9 @@ void parseInputString(char *input, char *user, char *password, char *host, char 
 			}
             else if(input[i] == '/'){ //no password, copy to host
                 curr_state = 4;
-				curr_index = 0;
-                for(int i = 0; i < strlen(user); i++)
-                    host[i] = password[i];
+		int j;		curr_index = 0;
+                for(j = 0; j < strlen(user); j++)
+                    host[j] = password[j];
                 memset(password, 0, MAX_STRING_SIZE);
             }
 			else{ // still reading password
@@ -102,8 +103,8 @@ void parseInputString(char *input, char *user, char *password, char *host, char 
 void parseFile(char *url_path, int url_path_size, char *filename){
 	
 	int curr_index = 0;
-
-	for(int i = 0; i < url_path_size; i++){
+	int i;
+	for(i = 0; i < url_path_size; i++){
 
 		if(url_path[i] == '/'){ // current filename is a directory, reset and start again
 			curr_index = 0;
@@ -239,17 +240,16 @@ void extractInfoPassive(char * input, int * port){
 	strncpy(values, input + 27*sizeof(char), strlen(input) - 27 - 3); //copiar os 6 bytes mandados pelo passive mode
 
 	//printf("%s\n", values);
-
-	//printf("String2 size: %d\n", strlen(values));
+	int valSize = strlen(values);
+	//printf("String2 size: %d\n", valSize);
 
 	int commaCounter = 0;
 	int curr_index = 0;
 
 	char portV1[4];
 	char portV2[4];
-
-	for(int i = 0; i < strlen(values); i++){
-
+	int i;
+	for(i = 0; i < valSize; i++){
 		char c = values[i];
 		if(c == ','){
 			if(commaCounter == 4){
@@ -263,7 +263,6 @@ void extractInfoPassive(char * input, int * port){
 		}
 		else if(commaCounter == 4){
 			portV1[curr_index] = c;
-			//printf("%c", c);
 			curr_index++;
 		}
 		else if(commaCounter == 5){
@@ -271,7 +270,7 @@ void extractInfoPassive(char * input, int * port){
 			curr_index++;
 		}
 	}
-
+	
 	int port1 = atoi(portV1);
 	int port2 = atoi(portV2);
 	*port = 256*port1 + port2;
