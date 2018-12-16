@@ -175,13 +175,16 @@ void readToFile(char* filename, int socketFD){
 	
 	char str[] = "downloads/";
 	strcat(str, filename);
-	FILE * f = fopen((char*)str, "w+");
+	FILE * f = fopen((char*)str, "wb+");
+	
+	printf("After fopen\n");
 
-	char auxBuff[256];
+	unsigned char auxBuff[256];
 	int n;
 
 	while((n = read(socketFD, auxBuff, 256))>0){
-		fwrite(auxBuff, sizeof(char), n, f);
+		printf("%d\n", n);
+		fwrite((void*)auxBuff, sizeof(char), n, f);
 	}
 
 	fclose(f);
@@ -287,6 +290,8 @@ void sendRetrAndReadResponse(int sockfdA, int sockfdB, char* path, char* filenam
 	char ret[256];
 
 	sleep(1);
+	
+	printf("In retr read\n");
 
 	int bytes = read(sockfdA, ret, 256);
 	ret[bytes] = '\0';
