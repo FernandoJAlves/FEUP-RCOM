@@ -171,21 +171,24 @@ void readMessage(int sockfd, char* serverAnswer){
 }
 
 
-void readToFile(char* filename, int socketFD){
-	
-	char str[] = "downloads/";
-	strcat(str, filename);
-	FILE * f = fopen((char*)str, "wb+");
-	
-	printf("After fopen\n");
 
-	unsigned char auxBuff[256];
+void readToFile(const char* filename, int socketFD){
+	
+	chdir("./downloads/");
+	FILE * f = fopen(filename, "w");
+
+	char auxBuff[1024];
 	int n;
 
-	while((n = read(socketFD, auxBuff, 256))>0){
-		printf("%d\n", n);
-		fwrite((void*)auxBuff, sizeof(char), n, f);
+	while ((n = read(socketFD, auxBuff, sizeof(auxBuff)))) {
+		if(n < 0){
+			printf("Error while reading FD\n");
+			break;
+		}
+		fwrite(auxBuff, n, 1, f);
+
 	}
+
 
 	fclose(f);
 }
@@ -287,13 +290,11 @@ void sendRetrAndReadResponse(int sockfdA, int sockfdB, char* path, char* filenam
 	write(sockfdA, path, strlen(path));
 	write(sockfdA, "\n", 1);
 
-	char ret[256];
+	char ret[512];
 
 	sleep(1);
-	
-	printf("In retr read\n");
 
-	int bytes = read(sockfdA, ret, 256);
+	int bytes = read(sockfdA, ret, 512);
 	ret[bytes] = '\0';
 
 	printf("%s",ret);
