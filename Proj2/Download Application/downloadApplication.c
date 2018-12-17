@@ -134,10 +134,8 @@ struct hostent* getip(char* host)
 
 
 void readServerAws(int sockfd, char *responseCode)
-{
-	//TODO
-	
-	sleep(1);
+{	
+	usleep(100*1000);
 	char input[500];
 	
 	int i = read(sockfd,&input,500);
@@ -145,25 +143,9 @@ void readServerAws(int sockfd, char *responseCode)
 	input[i] = '\0';
 
 	printf("%s",input);
-
-/*
-	read(sockfd, code, 3);
-
-	if(!strcmp(code, "220")){
-		
-		printf("%s",code);
-
-		do{
-			read(sockfd,&c,1);
-			printf("%c",c);
-		}while (c!='\n');
-	}
-	*/
-
 }
 
 void readMessage(int sockfd, char* serverAnswer){
-
 	char answer[256];
 	int i = read(sockfd,answer,256);
 	answer[i] = '\0';
@@ -171,12 +153,10 @@ void readMessage(int sockfd, char* serverAnswer){
 }
 
 
-
 void readToFile(const char* filename, int socketFD){
 	
 	chdir("./downloads/");
 	FILE * f = fopen(filename, "w");
-
 	char auxBuff[1024];
 	int n;
 
@@ -188,7 +168,6 @@ void readToFile(const char* filename, int socketFD){
 		fwrite(auxBuff, n, 1, f);
 
 	}
-
 
 	fclose(f);
 }
@@ -245,9 +224,7 @@ void extractInfoPassive(char * input, int * port){
 
 	strncpy(values, input + 27*sizeof(char), strlen(input) - 27 - 3); //copiar os 6 bytes mandados pelo passive mode
 
-	//printf("%s\n", values);
 	int valSize = strlen(values);
-	//printf("String2 size: %d\n", valSize);
 
 	int commaCounter = 0;
 	int curr_index = 0;
@@ -292,7 +269,7 @@ void sendRetrAndReadResponse(int sockfdA, int sockfdB, char* path, char* filenam
 
 	char ret[512];
 
-	sleep(1);
+	usleep(100*1000);
 
 	int bytes = read(sockfdA, ret, 512);
 	ret[bytes] = '\0';
@@ -309,13 +286,6 @@ void sendRetrAndReadResponse(int sockfdA, int sockfdB, char* path, char* filenam
 
 int main(int argc, char** argv){
 
-    /*Steps:
-        1 - parse input
-        2 - obter IP
-        3 - criar socket TCP
-
-
-    */
 
 	char* user = (char*) calloc(MAX_STRING_SIZE, sizeof(char));
     char* password = (char*) calloc(MAX_STRING_SIZE, sizeof(char));
