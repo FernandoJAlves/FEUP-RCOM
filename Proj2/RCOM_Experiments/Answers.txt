@@ -1,0 +1,16 @@
+Exp1 Questions:
+
+Q: What are the ARP packets and what are they used for?
+A: The ARP(Address Resolution Protocol) is a communication protocol used to discover
+the link layer associated to the IPv4 address. Also used to map the network address
+to a HardWare Address like MAC
+
+Q: What are the MAC and IP addresses of ARP packets and why?
+A: When one PC pings another one, the last one asks the first its MAC address. This 
+question is made in the form of a ARP Packet. This ARP includes the IP address and 
+the MAC address of the sender PC and the IP address of the receiving PC. In return,
+The receiving PC sends a packet that includes its MAC and IP addresses and the
+sender MAC and IP addresses
+
+Q: What packets does the ping command generate?
+A: First generates ARP packtes, then generates ICMP packets
