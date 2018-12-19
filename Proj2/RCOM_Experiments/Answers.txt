@@ -14,3 +14,19 @@ sender MAC and IP addresses
 
 Q: What packets does the ping command generate?
 A: First generates ARP packtes, then generates ICMP packets
+
+Q: What are the MAC and IP addresses of the ping packets?
+A: 
+
+Q: How to determine if a receiving Ethernet frame is ARP, IP, ICMP?
+A: The Ethernet header says the type of packet If its value is 0x0800, then the type
+is IP, so there's an IP header. If the vlaue of IP header is 1, the protocol is of
+ICMP. Otherwise. if the value is 0x0806, means it's a ARP Packet
+
+Q: How to determine the length of a receiving frame?
+A: Using tools like wireshark
+
+Q: What is the loopback interface and why is it important?
+A: It's a virtual network interface used by the computer to receive messages from 
+itself. Its main function is to check if the network is configurated in the 
+proper way.
